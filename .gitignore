@@ -1,4 +1,4 @@
-# Created by https://www.gitignore.io
+*.json
 
 ### vim ###
 [._]*.s[a-w][a-z]

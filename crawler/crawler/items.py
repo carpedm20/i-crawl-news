@@ -7,8 +7,11 @@
 
 import scrapy
 
+class News(scrapy.Item):
+    href = scrapy.Field()
+    title = scrapy.Field()
+    name = scrapy.Field()
+    date = scrapy.Field()
 
-class CrawlerItem(scrapy.Item):
-    # define the fields for your item here like:
-    # name = scrapy.Field()
-    pass
+class MainNews(News):
+    sub = scrapy.Field()
