@@ -23,43 +23,46 @@ class NewsSpider(Spider):
     name = "news"
     allowed_domains = ["google.com", "google.co.kr"]
 
-    def __init__ (self, month, year, query):
+    def __init__ (self, month=4, year=2013, query="apple"):
         self.base_url = get_url(month, 1, year, month, 31, year, query)
         self.start_urls = [self.base_url]
 
         log.msg("[START] %s" % self.base_url, log.INFO)
 
     def parse_article(self, selector, is_main=True):
-        if is_main:
-            a = selector.xpath("h3/a")[0]
-            info = selector.xpath("div/span")
-        else:
-            a = selector.xpath("a")[0]
-            info = selector.xpath("span")
+        try:
+            if is_main:
+                a = selector.xpath("h3/a")[0]
+                info = selector.xpath("div/span")
+            else:
+                a = selector.xpath("a")[0]
+                info = selector.xpath("span")
 
-        href = a.xpath("@href")[0].extract()
-        elem = html.fragment_fromstring(a.extract())
-        title = elem.text_content()
+            href = a.xpath("@href")[0].extract()
+            elem = html.fragment_fromstring(a.extract())
+            title = elem.text_content()
 
-        if len(info) != 3:
-            log.msg("[parse_main_article] Wrong span # : %s" % len(info), log.ERROR)
-        name = info[0].xpath("text()")[0].extract()
-        date = info[2].xpath("text()")[0].extract()
+            if len(info) != 3:
+                log.msg("[parse_main_article] Wrong span # : %s" % len(info), log.ERROR)
+            name = info[0].xpath("text()")[0].extract()
+            date = info[2].xpath("text()")[0].extract()
 
-        if is_main:
-            news = MainNews()
-            news['sub'] = []
-            log.msg("[MAIN] %s (%s)" % (title, href), log.INFO)
-        else:
-            news = News()
-            log.msg("[SUB] %s (%s)" % (title, href), log.INFO)
+            if is_main:
+                news = MainNews()
+                news['sub'] = []
+                log.msg("[MAIN] %s (%s)" % (title, href), log.INFO)
+            else:
+                news = News()
+                log.msg("[SUB] %s (%s)" % (title, href), log.INFO)
 
-        news['href'] = href
-        news['title'] = title
-        news['name'] = name
-        news['date'] = date 
+            news['href'] = href
+            news['title'] = title
+            news['name'] = name
+            news['date'] = date 
 
-        return news
+            return news
+        except:
+            return None
 
     def parse(self, response):
         for li in response.xpath("//li[@class='g']"):
@@ -67,11 +70,16 @@ class NewsSpider(Spider):
 
             main = divs[0]
             main = self.parse_article(main)
+            main['related'] = 0
 
             if len(divs) > 1:
                 for div in divs[1:]:
                     sub = self.parse_article(div, False)
-                    main['sub'].append(sub)
+                    if sub:
+                        main['sub'].append(sub)
+
+                related = divs[-1].xpath(".//span/span/text()").re("\d+")[0]
+                main['related'] = int(related)
 
             yield main
 

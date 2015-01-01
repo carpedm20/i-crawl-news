@@ -15,3 +15,4 @@ class News(scrapy.Item):
 
 class MainNews(News):
     sub = scrapy.Field()
+    related = scrapy.Field()

@@ -1,5 +1,7 @@
 *.json
 log*
+*.zip
+*backup*
 
 ### vim ###
 [._]*.s[a-w][a-z]

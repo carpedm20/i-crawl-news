@@ -1,4 +1,4 @@
-SLEEP_TIME = 5
+SLEEP_TIME = 20
 SEARCH_URL = "https://www.google.com/search?cf=all\
 &ned=us\
 &hl=en\
