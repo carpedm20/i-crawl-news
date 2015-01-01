@@ -20,7 +20,7 @@ class NewsSpider(Spider):
         for articles in response.xpath("//li[@class='g']"):
             main_articles = articles.xpath(".//h3/a")
 
-            if len(main_articles) != 1):
+            if len(main_articles) != 1:
                 log.msg("Length of main article is not 1", log.WARNING)
             else:
                 main = main_articles[0]

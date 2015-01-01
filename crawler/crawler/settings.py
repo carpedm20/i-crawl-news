@@ -14,4 +14,9 @@ SPIDER_MODULES = ['crawler.spiders']
 NEWSPIDER_MODULE = 'crawler.spiders'
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
-#USER_AGENT = 'crawler (+http://www.yourdomain.com)'
+#USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36'
+
+DOWNLOADER_MIDDLEWARES = {
+    '.contrib.downloadermiddleware.useragent.UserAgentMiddleware' : None,
+    'crawler.useragent.RotateUserAgentMiddleware' :400
+}
