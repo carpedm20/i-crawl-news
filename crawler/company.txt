@@ -1,0 +1,7 @@
+apple
+google
+microsoft
+facebook
+ibm
+oracle
+intel
