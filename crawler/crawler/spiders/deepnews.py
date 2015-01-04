@@ -13,22 +13,23 @@ from crawler.items import *
 from crawler.config import *
 
 def get_urls(company, year, month):
-    re = "./backup_apple/%s-%s-%s.json" % (company, str(year).zfill(2), month)
+    urls = []
+    re = "./backup/%s-%s-%s.json" % (company, year, month)
     for file_name in glob(re):
         j = json.loads(open(file_name).read())
         for i in j:
             for k in i['sub']:
-                yield k['href']
-            yield i['href']
+                urls.append(k['href'])
+            urls.append(i['href'])
+    return urls
 
 class DeepNewsSpider(Spider):
     name = "deepnews"
     allowed_domains = ["google.com", "google.co.kr"]
     start_urls = []
 
-    def __init__ (self, month=4, year=2013, query="apple"):
-        for url in get_urls(query, year, month):
-            self.start_urls.append(url)
+    def __init__ (self, month=4, year=2013, query="google"):
+        self.start_urls = get_urls(query, year, month)
 
     def parse(self, response):
         article = Article()
