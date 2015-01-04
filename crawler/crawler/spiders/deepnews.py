@@ -33,7 +33,9 @@ class DeepNewsSpider(Spider):
 
     def parse(self, response):
         article = Article()
-        article['html'] = response.body
+        article['html'] = response.body_as_unicode()
         article['url'] = response.url
+
+        log.msg(" ==> " + article['url'], log.INFO)
 
         yield article
