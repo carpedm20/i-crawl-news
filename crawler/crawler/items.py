@@ -16,3 +16,7 @@ class News(scrapy.Item):
 class MainNews(News):
     sub = scrapy.Field()
     related = scrapy.Field()
+
+class Article(scrapy.Item):
+    url = scrapy.Field()
+    html = scrapy.Field()

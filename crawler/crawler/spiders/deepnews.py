@@ -21,14 +21,18 @@ def get_urls(company, year, month):
                 yield k['href']
             yield i['href']
 
-class NewsSpider(Spider):
-    name = "news"
+class DeepNewsSpider(Spider):
+    name = "deepnews"
     allowed_domains = ["google.com", "google.co.kr"]
+    start_urls = []
 
     def __init__ (self, month=4, year=2013, query="apple"):
-
-
-        log.msg("[START] %s" % self.base_url, log.INFO)
+        for url in get_urls(query, year, month):
+            self.start_urls.append(url)
 
     def parse(self, response):
+        article = Article()
+        article['html'] = response.body
+        article['url'] = response.url
 
+        yield article
