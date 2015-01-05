@@ -13,6 +13,8 @@ BOT_NAME = 'crawler'
 SPIDER_MODULES = ['crawler.spiders']
 NEWSPIDER_MODULE = 'crawler.spiders'
 
+DOWNLOAD_TIMEOUT = 10
+
 LOG_FILE = 'log.txt'
 LOG_LEVEL = 'INFO'
 
