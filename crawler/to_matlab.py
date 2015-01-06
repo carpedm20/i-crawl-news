@@ -1,6 +1,7 @@
 #/usr/bin/python
+import os
 from glob import glob
-import scipy
+import scipy.io as sio
 import json
 
 ARTICLE_DIR = "article"
@@ -13,7 +14,8 @@ month_dict = {"Jan":1,"Feb":2,"Mar":3,"Apr":4, "May":5, "Jun":6, "Jul":7,"Aug":8
 
 for company in companies:
     for year in years:
-        articles = glob("./%s/%s-%s*-article.json" % (ARTICLE_DIR, company, year))
+        path = "./%s/%s-%s*-article.json" % (ARTICLE_DIR, company, year)
+        articles = glob(path)
 
         indexes = []
         dates = []
@@ -55,4 +57,8 @@ for company in companies:
                 'related' : related,
                 'texts'   : texts,
                 'titles'  : titles}
-        scipy.io.savemat('./mat/%s/%s.mat', data)
+
+        if not os.path.exists('./mat/%s/' % company):
+            os.makedirs('./mat/%s/' % company)
+
+        sio.savemat('./mat/%s/%s.mat' % (company, year), data)
