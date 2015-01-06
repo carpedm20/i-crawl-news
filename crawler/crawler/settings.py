@@ -16,7 +16,10 @@ NEWSPIDER_MODULE = 'crawler.spiders'
 DOWNLOAD_TIMEOUT = 10
 
 LOG_FILE = 'log.txt'
-#LOG_LEVEL = 'INFO'
+LOG_LEVEL = 'INFO'
+
+RANDOMIZE_DOWNLOAD_DELAY = True
+DOWNLOAD_DELAY = 0
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 #USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36'
