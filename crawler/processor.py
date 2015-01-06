@@ -27,6 +27,7 @@ BACKUP_DIR = "backup"
 DEEP_DIR = "deep_delay"
 
 deeps = glob("./%s/*-deep.json" % DEEP_DIR)
+deeps = ["deep_delay/google-2010-8-deep.json"]
 deeps.sort()
 
 pool = Pool(8)
