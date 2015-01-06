@@ -26,8 +26,11 @@ def get_text(deep_i):
 BACKUP_DIR = "backup"
 DEEP_DIR = "deep_delay"
 
+TEST = True
+
 deeps = glob("./%s/*-deep.json" % DEEP_DIR)
-deeps = ["deep_delay/google-2010-8-deep.json"]
+if TEST:
+    deeps = ["deep_delay/google-2010-8-deep.json"]
 deeps.sort()
 
 pool = Pool(8)
@@ -37,7 +40,7 @@ for deep in deeps:
     print out_fname
     info_fname = deep.replace('-deep.','.').replace(DEEP_DIR, BACKUP_DIR)
 
-    if isfile(out_fname):
+    if isfile(out_fname) and not TEST:
         print " ==> skip"
         continue
 
@@ -66,6 +69,17 @@ for deep in deeps:
     for idx, deep_i in enumerate(deep_j):
         url = deep_i['url']
         html = deep_i['html']
+
+        if text_dict[url][0] == '':
+            article = Article(url, request_timeout=100)
+            article.download()
+            article.parse()
+
+            text_dict[url][0] = article.text
+            text_dict[url][0] = article.title
+
+            if article.text == '':
+                print url
 
         find = False
         for info_i in info_j:
@@ -97,6 +111,9 @@ for deep in deeps:
             text = article.text
             title = article.title
 
+            if text == '':
+                print url
+
             for info_i in info_j:
                 if info_i['href'] == url:
                     info_i['text'] = text
@@ -119,5 +136,6 @@ for deep in deeps:
 
     print "Banned %s" % len(banned_urls)
 
-    with open(out_fname, 'wb') as f:
-        json.dump(info_j, f)
+    if not TEST:
+        with open(out_fname, 'wb') as f:
+            json.dump(info_j, f)

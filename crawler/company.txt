@@ -1,7 +1,3 @@
-ibm
-oracle
-intel
 google
 apple
-microsoft
 facebook
