@@ -2,6 +2,7 @@
 log*
 *.zip
 *backup*
+crawler/mat/
 
 ### vim ###
 [._]*.s[a-w][a-z]
