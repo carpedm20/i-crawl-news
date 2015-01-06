@@ -87,27 +87,31 @@ for deep in deeps:
     banned_urls = []
     print "Not found %s" % len(not_found_urls)
     for url in not_found_urls:
-        article = Article(url, request_timeout=100)
-        article.download()
-        article.parse()
-
-        text = article.text
-        title = article.title
-
         find = False
-        for info_i in info_j:
-            if info_i['href'] == url:
-                info_i['text'] = text
-                info_i['title'] = title
-                find = True
-            for sub in info_i['sub']:
-                if sub['href'] == url:
-                    sub['text'] = text
-                    sub['title'] = title
+        try:
+            article = Article(url, request_timeout=100)
+            article.download()
+            article.parse()
+
+            text = article.text
+            title = article.title
+
+            for info_i in info_j:
+                if info_i['href'] == url:
+                    info_i['text'] = text
+                    info_i['title'] = title
                     find = True
+                for sub in info_i['sub']:
+                    if sub['href'] == url:
+                        sub['text'] = text
+                        sub['title'] = title
+                        find = True
+                        break
+                if find:
                     break
-            if find:
-                break
+        except:
+            print "Exception %s" % url
+            pass
         
         if not find:
             banned_urls.append(url)
