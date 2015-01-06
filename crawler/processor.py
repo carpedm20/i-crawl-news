@@ -3,6 +3,7 @@ import copy
 import json
 import timeit
 from glob import glob
+from os.path import isfile
 from multiprocessing import Pool
 
 from newspaper import Article
@@ -16,6 +17,7 @@ def get_text(deep_i):
     article = Article(url, request_timeout=100)
     article.set_html(html)
     article.parse()
+
     text = article.text
     title = article.title
 
@@ -34,6 +36,10 @@ for deep in deeps:
     print out_fname
     info_fname = deep.replace('-deep.','.').replace(DEEP_DIR, BACKUP_DIR)
 
+    if isfile(out_fname):
+        print " ==> skip"
+        continue
+
     try:
         deep_j = json.loads(open(deep).read())
     except:
@@ -51,11 +57,14 @@ for deep in deeps:
 
     text_dict = dict(texts)
 
+    not_found_urls = [info_i['href'] for info_i in info_j]
+    for info_i in info_j:
+        for sub in info_i['sub']:
+            not_found_urls.append(sub['href'])
+
     for idx, deep_i in enumerate(deep_j):
         url = deep_i['url']
         html = deep_i['html']
-
-        print "%s (%s/%s = %10.2f)" % (url, idx, len(deep_j), float(idx)/len(deep_j)*100.0)
 
         find = False
         for info_i in info_j:
@@ -72,8 +81,38 @@ for deep in deeps:
             if find:
                 break
 
+        if find:
+            not_found_urls.remove(url)
+
+    banned_urls = []
+    print "Not found %s" % len(not_found_urls)
+    for url in not_found_urls:
+        article = Article(url, request_timeout=100)
+        article.download()
+        article.parse()
+
+        text = article.text
+        title = article.title
+
+        find = False
+        for info_i in info_j:
+            if info_i['href'] == url:
+                info_i['text'] = text
+                info_i['title'] = title
+                find = True
+            for sub in info_i['sub']:
+                if sub['href'] == url:
+                    sub['text'] = text
+                    sub['title'] = title
+                    find = True
+                    break
+            if find:
+                break
+        
         if not find:
-            print "Error : %s" % url
+            banned_urls.append(url)
+
+    print "Banned %s" % len(banned_urls)
 
     with open(out_fname, 'wb') as f:
         json.dump(info_j, f)
