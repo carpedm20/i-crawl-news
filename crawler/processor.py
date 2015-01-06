@@ -13,12 +13,13 @@ def get_text(deep_i):
     url = deep_i['url']
     html = deep_i['html']
 
-    article = Article(url)
+    article = Article(url, request_timeout=100)
     article.set_html(html)
     article.parse()
     text = article.text
+    title = article.title
 
-    return [url, text]
+    return [url, [text, title]]
 
 BACKUP_DIR = "backup"
 DEEP_DIR = "deep_delay"
@@ -26,7 +27,7 @@ DEEP_DIR = "deep_delay"
 deeps = glob("./%s/*-deep.json" % DEEP_DIR)
 deeps.sort()
 
-pool = Pool(10)
+pool = Pool(8)
 
 for deep in deeps:
     out_fname = deep.replace('deep.','article.').replace(DEEP_DIR, "article")
@@ -48,6 +49,8 @@ for deep in deeps:
     stop = timeit.default_timer()    
     print " => POOL : %s" % (stop - start)
 
+    text_dict = dict(texts)
+
     for idx, deep_i in enumerate(deep_j):
         url = deep_i['url']
         html = deep_i['html']
@@ -57,11 +60,13 @@ for deep in deeps:
         find = False
         for info_i in info_j:
             if info_i['href'] == url:
-                info_i['text'] = text
+                info_i['text'] = text_dict[url][0]
+                info_i['title'] = text_dict[url][1]
                 find = True
             for sub in info_i['sub']:
                 if sub['href'] == url:
-                    sub['text'] = text
+                    sub['text'] = text_dict[url][0]
+                    sub['title'] = text_dict[url][1]
                     find = True
                     break
             if find:
