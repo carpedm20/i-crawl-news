@@ -21,12 +21,12 @@ for article in articles:
                 count += 1
         except:
             error += 1
-        for sub in article_i['sub']:
+        """for sub in article_i['sub']:
             total += 1
             try:
                 if sub['text'] == '':
                     count += 1
             except:
-                error += 1
+                error += 1"""
 
     print "%s : %s : %s : %s" % (article, total, count, error)

@@ -15,7 +15,12 @@ month_dict = {"Jan":1,"Feb":2,"Mar":3,"Apr":4, "May":5, "Jun":6, "Jul":7,"Aug":8
 for company in companies:
     for year in years:
         path = "./%s/%s-%s*-article.json" % (ARTICLE_DIR, company, year)
+        if os.path.isfile(path):
+            print "Skip %s exist" % path
         articles = glob(path)
+
+        if len(articles) == 0:
+            continue
 
         indexes = []
         dates = []
@@ -26,6 +31,7 @@ for company in companies:
         titles = []
 
         for article in articles:
+            print  "==>", article
             article_j = json.loads(open(article).read())
 
             for idx, article_i in enumerate(article_j):
