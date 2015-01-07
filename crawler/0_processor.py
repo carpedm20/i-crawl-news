@@ -4,7 +4,7 @@ import json
 import timeit
 from glob import glob
 from os.path import isfile
-from multiprocessing import Pool
+from multiprocessing import Pool, cpu_count
 
 from newspaper import Article
 from newspaper.outputformatters import OutputFormatter
@@ -60,7 +60,7 @@ def get_text(info):
 
 TEST = False
 
-pool = Pool(8)
+pool = Pool(cpu_count())
 
 companies = ['google','apple','facebook','microsoft','ibm','oracle','intel']
 years = range(2010,2015)
