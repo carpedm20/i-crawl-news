@@ -10,27 +10,59 @@ from newspaper import Article
 from newspaper.outputformatters import OutputFormatter
 from newspaper.cleaners import DocumentCleaner
 
+import goose
+
 BACKUP_DIR = "backup"
 DEEP_DIR = "deep_delay"
+
+g = goose.Goose()
+
+def get_text_with_url(url):
+    article = g.extract(url=url)
+    text = article.cleaned_text
+    title = article.title
+
+    if text == '':
+        article = Article(url, request_timeout=100)
+        article.download()
+        article.parse()
+
+        text = article.text
+        title = article.title
+
+    return [text, title]
 
 def get_text(info):
     url = info[0]
     html = info[1]
 
-    article = Article(url, request_timeout=100)
-    article.set_html(html)
-    article.parse()
+    try:
+        article = Article(url, request_timeout=100)
+        article.set_html(html)
+        article.parse()
 
-    text = article.text
-    title = article.title
+        text = article.text
+        title = article.title
+
+        if text == '':
+            article = g.extract(raw_html = html)
+            text = article.cleaned_text
+            title = article.title
+    except:
+        try:
+            article = g.extract(raw_html = html)
+            text = article.cleaned_text
+            title = article.title
+        except:
+            return [url, ['','']]
 
     return [url, [text, title]]
 
-TEST = True
+TEST = False
 
 pool = Pool(8)
 
-companies = ['ibm','oracle','intel','google','apple','microsoft','facebook']
+companies = ['google','apple','facebook','microsoft','ibm','oracle','intel']
 years = range(2010,2015)
 
 for company in companies:
@@ -40,8 +72,8 @@ for company in companies:
         
         for deep in deeps:
             out_fname = deep.replace('deep.','article.').replace(DEEP_DIR, "article")
-            print out_fname
             info_fname = deep.replace('-deep.','.').replace(DEEP_DIR, BACKUP_DIR)
+            print out_fname, info_fname
 
             if isfile(out_fname) and not TEST:
                 print " ==> skip"
@@ -60,6 +92,9 @@ for company in companies:
             start = timeit.default_timer()
             params = [(deep_i['url'], deep_i['html']) for deep_i in deep_j]
             texts = pool.map(get_text, params)
+            #for idx,param in enumerate(params):
+            #    print idx
+            #    text = get_text(param)
             stop = timeit.default_timer()    
             print " => POOL : %s" % (stop - start)
 
@@ -67,22 +102,22 @@ for company in companies:
 
             for info_i in info_j:
                 url = info_i['href']
-                text = text_dict[url][0]
-                title = text_dict[url][1]
+                try:
+                    text = text_dict[url][0]
+                    title = text_dict[url][1]
+                except:
+                    text, title = get_text_with_url(url)
 
-                if text == '':
-                    article = Article(url, request_timeout=100)
-                    article.download()
-                    article.parse()
+                if text == '' and title != '':
+                    text, title = get_text_with_url(url)
 
-                    text_dict[url][0] = article.text
-                    text_dict[url][0] = article.title
-
-                    if article.text == '':
-                        print "Error %s" % url
+                if text == '' and title != '':
+                    info_j.remove(info_i)
+                    print url
                 else:
-                    info_i['text'] = text_dict[url][0]
-                    info_i['title'] = text_dict[url][1]
+                    info_i['text'] = text
+                    info_i['title'] = title
 
-            with open(out_fname, 'wb') as f:
-                json.dump(info_j, f)
+            if not TEST:
+                with open(out_fname, 'wb') as f:
+                    json.dump(info_j, f)
