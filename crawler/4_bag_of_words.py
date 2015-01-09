@@ -53,6 +53,9 @@ train_data_features = train_data_features.toarray()
 
 vocab = vectorizer.get_feature_names()
 
+dist = np.sum(train_data_features, axis=0)
+for tag, count in zip(vocab, dist):
+    print count, tag
 
 test_data_features = vectorizer.transform(clean_words)
 test_data_features = test_data_features.toarray()
