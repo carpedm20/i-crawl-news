@@ -8,25 +8,33 @@ ARTICLE_DIR = "article"
 articles = glob("./%s/*-article.json" % ARTICLE_DIR)
 articles.sort()
 
-for article in articles:
-    article_j = json.loads(open(article).read())
-    total = 0
-    count = 0
-    error = 0
+companies = ['google','apple','facebook']
+years = range(2010,2015)
 
-    for article_i in article_j:
-        total += 1
-        try:
-            if article_i['text'] == '':
-                count += 1
-        except:
-            error += 1
-        """for sub in article_i['sub']:
+month_dict = {"Jan":1,"Feb":2,"Mar":3,"Apr":4, "May":5, "Jun":6, "Jul":7,"Aug":8,"Sep":9,"Oct":10,"Nov":11,"Dec":12}
+
+for company in companies:
+    path = "./%s/%s-*-article.json" % (ARTICLE_DIR, company)
+
+    for article in glob(path):
+        article_j = json.loads(open(article).read())
+        total = 0
+        count = 0
+        error = 0
+
+        for article_i in article_j:
             total += 1
             try:
-                if sub['text'] == '':
+                if article_i['text'] == '':
                     count += 1
             except:
-                error += 1"""
+                error += 1
+            """for sub in article_i['sub']:
+                total += 1
+                try:
+                    if sub['text'] == '':
+                        count += 1
+                except:
+                    error += 1"""
 
-    print "%s : %s : %s : %s" % (article, total, count, error)
+        print "%s : %s : %s : %s" % (article, total, count, error)
