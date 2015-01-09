@@ -19,7 +19,10 @@ for company in companies:
     path = "./%s/%s-*-article.json" % (ARTICLE_DIR, company)
 
     for article in glob(path):
-        article_j = json.loads(open(article).read())
+        try:
+            article_j = json.loads(open(article).read())
+        except:
+            continue
         total = 0
         count = 0
         error = 0
