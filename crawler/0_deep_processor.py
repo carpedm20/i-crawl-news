@@ -25,10 +25,12 @@ def get_text_with_url(url):
     if text == '':
         article = Article(url, request_timeout=100)
         article.download()
-        article.parse()
-
-        text = article.text
-        title = article.title
+        try:
+            article.parse()
+            text = article.text
+            title = article.title
+        except:
+            text = ''
 
     return [text, title]
 

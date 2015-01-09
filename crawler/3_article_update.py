@@ -17,7 +17,10 @@ articles = glob(path)
 for article in articles:
     print
     print article
-    article_j = json.loads(open(article).read())
+    try:
+        article_j = json.loads(open(article).read())
+    except:
+        continue
 
     for article_i in article_j:
         try:
