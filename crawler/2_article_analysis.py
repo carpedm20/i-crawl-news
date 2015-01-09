@@ -8,7 +8,7 @@ ARTICLE_DIR = "article"
 articles = glob("./%s/*-article.json" % ARTICLE_DIR)
 articles.sort()
 
-companies = ['google','apple','facebook']
+companies = ['google','apple','facebook', 'microsoft', 'ibm', 'oracle']
 years = range(2010,2015)
 
 month_dict = {"Jan":1,"Feb":2,"Mar":3,"Apr":4, "May":5, "Jun":6, "Jul":7,"Aug":8,"Sep":9,"Oct":10,"Nov":11,"Dec":12}
