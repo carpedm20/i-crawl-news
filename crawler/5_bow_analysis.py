@@ -8,7 +8,7 @@ BOW_DIR = "bow"
 bows = glob("./%s/*-bow.json" % BOW_DIR)
 bows.sort()
 
-companies = ['google','apple','facebook', 'microsoft', 'ibm', 'oracle']
+companies = ['google','apple','facebook']#, 'microsoft', 'ibm', 'oracle']
 years = range(2010,2015)
 
 word_count = {}
