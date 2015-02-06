@@ -33,6 +33,7 @@ for company in companies:
         bow = article.replace('/article/','/bow/').replace('article.json','bow.json')
         if isfile(bow):
             print " [!] %s already exists" % bow
+            continue
         else:
             print "[*] %s" % bow
 
