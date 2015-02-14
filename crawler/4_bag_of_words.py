@@ -16,7 +16,7 @@ ARTICLE_DIR = "article"
 articles = glob("./%s/*-article.json" % ARTICLE_DIR)
 articles.sort()
 
-companies = ['google','apple','facebook']
+companies = ['ibm','microsoft']
 
 vectorizer = CountVectorizer(analyzer = "word",
                              tokenizer = None,
@@ -43,6 +43,9 @@ for company in companies:
             try:
                 text = article_i['text']
             except:
+                continue
+
+            if text == "":
                 continue
 
             letters_only = re.sub("[^a-zA-Z]", " ", text) 

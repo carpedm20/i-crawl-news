@@ -18,8 +18,11 @@ from sklearn.cross_validation import train_test_split
 
 company_dict = {'GOOGL':'google',
                 'AAPL' :'apple',
-                'FB'   :'facebook'}
+                'FB'   :'facebook',
+                'IBM'   :'ibm',
+                'MSFT'   :'microsoft'}
 
+is_weight = True
 max_interval = 7
 scale = 1000
 
@@ -49,7 +52,8 @@ class Article(object):
 #lsi = models.LsiModel(corpus_tfidf, id2word=dictionary, num_topics=100)
 
 #for fname in glob("./mat/*-%s-*.mat" % scale):
-for fname in glob("./mat/*-%s-*.mat" % scale):
+#for fname in glob("./mat/*-%s-*.mat" % scale):
+for fname in glob("./mat/*-*.mat"):
     mat = scipy.io.loadmat(fname)
     outname = fname[:-4]
 
@@ -124,8 +128,9 @@ for fname in glob("./mat/*-%s-*.mat" % scale):
         pickle.dump(dictionary, f)
 
     corpus = [dictionary.doc2bow(t) for t in texts]
+    del texts
+
     len_dictionary = len(dictionary)
-    del dictionary
 
     tfidf = models.TfidfModel(corpus)
     corpus_tfidf = tfidf[corpus]
@@ -138,9 +143,10 @@ for fname in glob("./mat/*-%s-*.mat" % scale):
 
     vec_article_list = []
     run_length_list = []
+    log_vec_article_list = []
     tfidf_vec_article_list = []
-    tfidf_run_length_list = []
 
+    print "Making list"
     for idx, change in enumerate(changes):
         date = dates[idx]
         run = runs[idx]
@@ -161,25 +167,10 @@ for fname in glob("./mat/*-%s-*.mat" % scale):
 
                 vec_article_list.append(vec2dense(article.corpus, len_dictionary)/norm)
                 run_length_list.append(-gap)
-
-                tfidf_vec_article_list.append(vec2dense(article.tfidf, len_dictionary))
-                tfidf_run_length_list.append(-gap)
-
-    """
-    nan_idx = []
-
-    for idx, article in enumerate(vec_article_list):
-        if np.isnan(np.sum(article)):
-            nan_idx.append(idx)
-    nan_idx.sort()
-    nan_idx.reverse()
-    for idx in nan_idx:
-        del vec_article_list[idx]
-        del run_length_list[idx]
-    """
+    print "Finished making list"
 
     vec_article_train, vec_article_test, run_length_train, run_length_test = train_test_split(vec_article_list, run_length_list, test_size=0.33, random_state=42)
-    tfidf_vec_article_train, tfidf_vec_article_test, tfidf_run_length_train, tfidf_run_length_test = train_test_split(tfidf_vec_article_list, tfidf_run_length_list, test_size=0.33, random_state=42)
+    del vec_article_list
 
     with open(outname+'-train.vw','w') as f:
         for vec, run in zip(vec_article_train, run_length_train):
@@ -187,9 +178,9 @@ for fname in glob("./mat/*-%s-*.mat" % scale):
 
             ans=" "
             for x, y in zip(nonz[0], vec[nonz]):
-                ans += str(x)+":"+str(y)+" "
+                ans += str(dictionary[x])+":"+str(y)+" "
                 
-            f.write(str(run+1) + ans[:-1] + "\n")
+            f.write(str(run+1) + " |" + ans[:-1] + "\n")
 
     with open(outname+'-test.vw','w') as f:
         for vec, run in zip(vec_article_test, run_length_test):
@@ -197,9 +188,80 @@ for fname in glob("./mat/*-%s-*.mat" % scale):
 
             ans=" "
             for x, y in zip(nonz[0], vec[nonz]):
-                ans += str(x)+":"+str(y)+" "
+                ans += str(dictionary[x])+":"+str(y)+" "
                 
             f.write(str(run+1) +" |"+ ans[:-1] + "\n")
+
+    del vec_article_test, run_length_test, vec_article_train, run_length_train
+
+    print "Making list"
+    for idx, change in enumerate(changes):
+        date = dates[idx]
+        run = runs[idx]
+
+        #if run > max_interval:
+        #    run = max_interval
+
+        for gap in xrange(-run, 1):
+            new_date = date + gap * datetime.timedelta(days=1)
+
+            try:
+                cur_articles = article_dict[new_date]
+            except:
+                continue
+
+            for article in cur_articles:
+                log_vec_article_list.append(np.log(1+vec2dense(article.corpus, len_dictionary)))
+    print "Finished making list"
+
+    log_vec_article_train, log_vec_article_test, log_run_length_train, log_run_length_test = train_test_split(log_vec_article_list, run_length_list, test_size=0.33, random_state=42)
+    del log_vec_article_list
+
+    with open(outname+'-log-train.vw','w') as f:
+        for vec, run in zip(log_vec_article_train, log_run_length_train):
+            nonz = vec.nonzero()
+
+            ans=" "
+            for x, y in zip(nonz[0], vec[nonz]):
+                ans += str(dictionary[x])+":"+str(y)+" "
+                
+            f.write(str(run+1) + " |" + ans[:-1] + "\n")
+
+    with open(outname+'-log-test.vw','w') as f:
+        for vec, run in zip(log_vec_article_test, log_run_length_test):
+            nonz = vec.nonzero()
+
+            ans=" "
+            for x, y in zip(nonz[0], vec[nonz]):
+                ans += str(dictionary[x])+":"+str(y)+" "
+                
+            f.write(str(run+1) +" |"+ ans[:-1] + "\n")
+
+    del log_vec_article_train, log_run_length_train, log_vec_article_test, log_run_length_test
+
+    print "Making list"
+    for idx, change in enumerate(changes):
+        date = dates[idx]
+        run = runs[idx]
+
+        #if run > max_interval:
+        #    run = max_interval
+
+        for gap in xrange(-run, 1):
+            new_date = date + gap * datetime.timedelta(days=1)
+
+            try:
+                cur_articles = article_dict[new_date]
+            except:
+                continue
+
+            for article in cur_articles:
+                tfidf_vec_article_list.append(vec2dense(article.tfidf, len_dictionary))
+    print "Finished making list"
+
+    tfidf_vec_article_train, tfidf_vec_article_test, tfidf_run_length_train, tfidf_run_length_test = train_test_split(tfidf_vec_article_list, run_length_list, test_size=0.33, random_state=42)
+    del tfidf_vec_article_list
+    del run_length_list
 
     with open(outname+'-tfidf-train.vw','w') as f:
         for vec, run in zip(tfidf_vec_article_train, tfidf_run_length_train):
@@ -207,9 +269,9 @@ for fname in glob("./mat/*-%s-*.mat" % scale):
 
             ans=" "
             for x, y in zip(nonz[0], vec[nonz]):
-                ans += str(x)+":"+str(y)+" "
+                ans += str(dictionary[x])+":"+str(y)+" "
                 
-            f.write(str(run+1) + ans[:-1] + "\n")
+            f.write(str(run+1) + " |" + ans[:-1] + "\n")
 
     with open(outname+'-tfidf-test.vw','w') as f:
         for vec, run in zip(tfidf_vec_article_test, tfidf_run_length_test):
@@ -217,9 +279,12 @@ for fname in glob("./mat/*-%s-*.mat" % scale):
 
             ans=" "
             for x, y in zip(nonz[0], vec[nonz]):
-                ans += str(x)+":"+str(y)+" "
+                ans += str(dictionary[x])+":"+str(y)+" "
                 
             f.write(str(run+1) +" |"+ ans[:-1] + "\n")
 
-    print "%s. max run : %s" % (outname, max(run_length_list))
+    del tfidf_vec_article_train, tfidf_run_length_train, tfidf_vec_article_test, tfidf_run_length_test
+    del dictionary
+    del article_dict
+
     gc.collect()
