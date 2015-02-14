@@ -13,14 +13,16 @@ from glob import glob
 losses = []
 
 try:
-    for testf in glob("./vw/*2010-*-test.vw"):
+    for testf in glob("./vw/*-test.vw"):
+    #for testf in ['./vw/AAPL-250-4000-2014-2015-log-test.vw']:
         trainf = testf.replace("test","train")
         modelf = testf.replace("test","model")
         predf = testf.replace("test","pred")
         outf = testf.replace("test","out")
 
+        cmd = "vw %s -t -i %s -p %s" % (testf, modelf, predf)
+        #print cmd
         if not os.path.isfile(predf):
-            cmd = "vw %s -t -i %s -p %s" % (testf, modelf, predf)
             os.system(cmd)
 
         y_file = testf
@@ -33,12 +35,18 @@ try:
         y = np.loadtxt( y_file, usecols= [0] )
         max_y = max(y)
 
-        losses.append([testf, accuracy( y, y_predicted ), max_y])
+        losses.append([testf, accuracy( y, p), max_y])
 except:
     pass
 
 from operator import itemgetter
 losses = sorted(losses, key=itemgetter(1))
 for i, j, k in losses:
-    print i, j, k
+    print "%s\t%s\t%s" % (i, j, k)
+
+print "====================================="
+        
+losses = sorted(losses, key=itemgetter(0))
+for i, j, k in losses:
+    print "%s\t%s\t%s" % (i, j, k)
         
