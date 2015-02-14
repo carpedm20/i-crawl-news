@@ -1,9 +1,12 @@
+*.txt
+*.vw
 *.json
 log*
 *.zip
 *backup*
 crawler/mat/
 */data/*
+*/vw/*
 
 ### vim ###
 [._]*.s[a-w][a-z]

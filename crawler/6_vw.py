@@ -1,3 +1,6 @@
+from __future__ import division
+
+import gc
 import os
 import json
 import time
@@ -34,7 +37,6 @@ from gensim import corpora, models, similarities
 
 stopwords = nltk.corpus.stopwords.words('english')
 
-
 class Article(object):
     def __init__(self, idx, text, href, date):
         self.idx = idx
@@ -46,12 +48,13 @@ class Article(object):
 
 #lsi = models.LsiModel(corpus_tfidf, id2word=dictionary, num_topics=100)
 
+#for fname in glob("./mat/*-%s-*.mat" % scale):
 for fname in glob("./mat/*-%s-*.mat" % scale):
     mat = scipy.io.loadmat(fname)
     outname = fname[:-4]
 
-    if os.path.isfile(outname+'-test.vw'):
-        print "%s is already exists! continue..." % (outname+'-test.vw')
+    if os.path.isfile(outname+'-tfidf-test.vw'):
+        print "%s already exists. continue..." % (outname+'-tfidf-test.vw')
         continue
 
     split = fname[:-4].split('-')
@@ -87,15 +90,16 @@ for fname in glob("./mat/*-%s-*.mat" % scale):
         except:
             continue
         text = bow['words']
-        
-        article = Article(count, text, bow['href'], d)
-        articles.append(article)
+        if text != "":
+            article = Article(count, text, bow['href'], d)
+            articles.append(article)
 
-        try:
-            article_dict[d].append(article)
-        except:
-            article_dict[d] = []
-            article_dict[d].append(article)
+            try:
+                article_dict[d].append(article)
+            except:
+                article_dict[d] = []
+                article_dict[d].append(article)
+    del bows
 
     changes = []
     runs = []
@@ -113,10 +117,15 @@ for fname in glob("./mat/*-%s-*.mat" % scale):
     print "%s~%s from %s. # of CP : %s" % (start_y,end_y, company, len(changes))
     print "Text processing start"
 
-    texts = [[word for word in document.text.lower().split() if word not in stopwords] for document in articles]
+    texts = [[word for word in article.text.split()] for article in articles]
 
     dictionary = corpora.Dictionary(texts)
+    with open(outname+'-dic.pkl','w') as f:
+        pickle.dump(dictionary, f)
+
     corpus = [dictionary.doc2bow(t) for t in texts]
+    len_dictionary = len(dictionary)
+    del dictionary
 
     tfidf = models.TfidfModel(corpus)
     corpus_tfidf = tfidf[corpus]
@@ -128,15 +137,16 @@ for fname in glob("./mat/*-%s-*.mat" % scale):
         articles[idx].corpus = corpus[idx]
 
     vec_article_list = []
-    new_article_list = []
     run_length_list = []
+    tfidf_vec_article_list = []
+    tfidf_run_length_list = []
 
     for idx, change in enumerate(changes):
         date = dates[idx]
         run = runs[idx]
 
-        if run > max_interval:
-            run = max_interval
+        #if run > max_interval:
+        #    run = max_interval
 
         for gap in xrange(-run, 1):
             new_date = date + gap * datetime.timedelta(days=1)
@@ -147,13 +157,15 @@ for fname in glob("./mat/*-%s-*.mat" % scale):
                 continue
 
             for article in cur_articles:
-                vec = vec2dense(article.corpus, len(dictionary))
                 norm = sum(num for (tmp, num) in article.corpus)
 
-                vec_article_list.append(vec/norm)
-                new_article_list.append(article)
+                vec_article_list.append(vec2dense(article.corpus, len_dictionary)/norm)
                 run_length_list.append(-gap)
 
+                tfidf_vec_article_list.append(vec2dense(article.tfidf, len_dictionary))
+                tfidf_run_length_list.append(-gap)
+
+    """
     nan_idx = []
 
     for idx, article in enumerate(vec_article_list):
@@ -164,11 +176,10 @@ for fname in glob("./mat/*-%s-*.mat" % scale):
     for idx in nan_idx:
         del vec_article_list[idx]
         del run_length_list[idx]
-
-    with open(outname+'-dic.pkl','w') as f:
-        pickle.dump(dictionary, f)
+    """
 
     vec_article_train, vec_article_test, run_length_train, run_length_test = train_test_split(vec_article_list, run_length_list, test_size=0.33, random_state=42)
+    tfidf_vec_article_train, tfidf_vec_article_test, tfidf_run_length_train, tfidf_run_length_test = train_test_split(tfidf_vec_article_list, tfidf_run_length_list, test_size=0.33, random_state=42)
 
     with open(outname+'-train.vw','w') as f:
         for vec, run in zip(vec_article_train, run_length_train):
@@ -188,6 +199,27 @@ for fname in glob("./mat/*-%s-*.mat" % scale):
             for x, y in zip(nonz[0], vec[nonz]):
                 ans += str(x)+":"+str(y)+" "
                 
+            f.write(str(run+1) +" |"+ ans[:-1] + "\n")
+
+    with open(outname+'-tfidf-train.vw','w') as f:
+        for vec, run in zip(tfidf_vec_article_train, tfidf_run_length_train):
+            nonz = vec.nonzero()
+
+            ans=" "
+            for x, y in zip(nonz[0], vec[nonz]):
+                ans += str(x)+":"+str(y)+" "
+                
             f.write(str(run+1) + ans[:-1] + "\n")
 
+    with open(outname+'-tfidf-test.vw','w') as f:
+        for vec, run in zip(tfidf_vec_article_test, tfidf_run_length_test):
+            nonz = vec.nonzero()
+
+            ans=" "
+            for x, y in zip(nonz[0], vec[nonz]):
+                ans += str(x)+":"+str(y)+" "
+                
+            f.write(str(run+1) +" |"+ ans[:-1] + "\n")
+
     print "%s. max run : %s" % (outname, max(run_length_list))
+    gc.collect()
