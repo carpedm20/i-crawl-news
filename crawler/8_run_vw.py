@@ -18,7 +18,7 @@ def get_cmd(testf, execute=False):
     outf = testf.replace("test","out")
 
     # vw-varinfo -c -b 24 --ngram 1 --passes 100 ./vw/GOOGL-1000-1000-2010-2014-train.vw
-    cmd = "vw -c %s --ngram 1 --passes 100 --holdout_off -f %s 2>&1 | tee log.txt" % (trainf, modelf)
+    cmd = "vw -c %s --ngram 1 --passes 5000 --holdout_off -f %s 2>&1 | tee log.txt" % (trainf, modelf)
     print cmd
     if execute:
         os.system(cmd)

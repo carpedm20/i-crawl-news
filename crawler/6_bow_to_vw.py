@@ -16,6 +16,7 @@ from sklearn.cross_validation import train_test_split
 #start_date = datetime.datetime(start_y, 1, 1)
 #end_date = datetime.datetime(start_y, 12, 31)
 
+is_weighted = True
 company_dict = {'GOOGL':'google',
                 'AAPL' :'apple',
                 'FB'   :'facebook',
@@ -41,11 +42,12 @@ from gensim import corpora, models, similarities
 stopwords = nltk.corpus.stopwords.words('english')
 
 class Article(object):
-    def __init__(self, idx, text, href, date):
+    def __init__(self, idx, text, href, date, related):
         self.idx = idx
         self.text = text
         self.href = href
         self.date = date
+        self.related = related
         self.tfidf = None
         self.corpus = None
 
@@ -57,7 +59,12 @@ for fname in glob("./mat/*-*.mat"):
     mat = scipy.io.loadmat(fname)
     outname = fname[:-4]
 
-    if os.path.isfile(outname+'-tfidf-test.vw'):
+    if is_weighted:
+        test_name = outname+'-tfidf-w-test.vw'
+    else:
+        test_name = outname+'-tfidf-x-test.vw'
+
+    if os.path.isfile(test_name):
         print "%s already exists. continue..." % (outname+'-tfidf-test.vw')
         continue
 
@@ -95,7 +102,7 @@ for fname in glob("./mat/*-*.mat"):
             continue
         text = bow['words']
         if text != "":
-            article = Article(count, text, bow['href'], d)
+            article = Article(count, text, bow['href'], d, bow['related'])
             articles.append(article)
 
             try:
@@ -146,6 +153,8 @@ for fname in glob("./mat/*-*.mat"):
     log_vec_article_list = []
     tfidf_vec_article_list = []
 
+    hash_dict = {}
+
     print "Making list"
     for idx, change in enumerate(changes):
         date = dates[idx]
@@ -165,14 +174,24 @@ for fname in glob("./mat/*-*.mat"):
             for article in cur_articles:
                 norm = sum(num for (tmp, num) in article.corpus)
 
-                vec_article_list.append(vec2dense(article.corpus, len_dictionary)/norm)
+                x = vec2dense(article.corpus, len_dictionary)/norm
+                hash_dict[hash(str(x))] = article.related or 1
+
+                vec_article_list.append(x)
                 run_length_list.append(-gap)
     print "Finished making list"
 
     vec_article_train, vec_article_test, run_length_train, run_length_test = train_test_split(vec_article_list, run_length_list, test_size=0.33, random_state=42)
     del vec_article_list
 
-    with open(outname+'-train.vw','w') as f:
+    if is_weighted:
+        trainf = outname+'-w-train.vw'
+        testf = outname+'-w-test.vw'
+    else:
+        trainf = outname+'-x-train.vw'
+        testf = outname+'-x-test.vw'
+
+    with open(trainf,'w') as f:
         for vec, run in zip(vec_article_train, run_length_train):
             nonz = vec.nonzero()
 
@@ -180,9 +199,9 @@ for fname in glob("./mat/*-*.mat"):
             for x, y in zip(nonz[0], vec[nonz]):
                 ans += str(dictionary[x])+":"+str(y)+" "
                 
-            f.write(str(run+1) + " |" + ans[:-1] + "\n")
+            f.write(str(run+1) + " " + str(hash_dict[hash(str(vec))]) + " |" + ans[:-1] + "\n")
 
-    with open(outname+'-test.vw','w') as f:
+    with open(testf,'w') as f:
         for vec, run in zip(vec_article_test, run_length_test):
             nonz = vec.nonzero()
 
@@ -190,9 +209,11 @@ for fname in glob("./mat/*-*.mat"):
             for x, y in zip(nonz[0], vec[nonz]):
                 ans += str(dictionary[x])+":"+str(y)+" "
                 
-            f.write(str(run+1) +" |"+ ans[:-1] + "\n")
+            f.write(str(run+1) + " " + str(hash_dict[hash(str(vec))]) + " |" + ans[:-1] + "\n")
 
-    del vec_article_test, run_length_test, vec_article_train, run_length_train
+    del vec_article_test, run_length_test, vec_article_train, run_length_train, hash_dict
+
+    hash_dict = {}
 
     print "Making list"
     for idx, change in enumerate(changes):
@@ -211,13 +232,23 @@ for fname in glob("./mat/*-*.mat"):
                 continue
 
             for article in cur_articles:
-                log_vec_article_list.append(np.log(1+vec2dense(article.corpus, len_dictionary)))
+                x = np.log(1+vec2dense(article.corpus, len_dictionary))
+                hash_dict[hash(str(x))] = article.related or 1
+
+                log_vec_article_list.append(x)
     print "Finished making list"
 
     log_vec_article_train, log_vec_article_test, log_run_length_train, log_run_length_test = train_test_split(log_vec_article_list, run_length_list, test_size=0.33, random_state=42)
     del log_vec_article_list
 
-    with open(outname+'-log-train.vw','w') as f:
+    if is_weighted:
+        trainf = outname+'-log-w-train.vw'
+        testf = outname+'-log-w-test.vw'
+    else:
+        trainf = outname+'-log-x-train.vw'
+        testf = outname+'-log-x-test.vw'
+
+    with open(trainf,'w') as f:
         for vec, run in zip(log_vec_article_train, log_run_length_train):
             nonz = vec.nonzero()
 
@@ -225,9 +256,9 @@ for fname in glob("./mat/*-*.mat"):
             for x, y in zip(nonz[0], vec[nonz]):
                 ans += str(dictionary[x])+":"+str(y)+" "
                 
-            f.write(str(run+1) + " |" + ans[:-1] + "\n")
+            f.write(str(run+1) + " " + str(hash_dict[hash(str(vec))]) + " |" + ans[:-1] + "\n")
 
-    with open(outname+'-log-test.vw','w') as f:
+    with open(testf,'w') as f:
         for vec, run in zip(log_vec_article_test, log_run_length_test):
             nonz = vec.nonzero()
 
@@ -235,9 +266,11 @@ for fname in glob("./mat/*-*.mat"):
             for x, y in zip(nonz[0], vec[nonz]):
                 ans += str(dictionary[x])+":"+str(y)+" "
                 
-            f.write(str(run+1) +" |"+ ans[:-1] + "\n")
+            f.write(str(run+1) +" " + str(hash_dict[hash(str(vec))]) + " |"+ ans[:-1] + "\n")
 
-    del log_vec_article_train, log_run_length_train, log_vec_article_test, log_run_length_test
+    del log_vec_article_train, log_run_length_train, log_vec_article_test, log_run_length_test, hash_dict
+
+    hash_dict = {}
 
     print "Making list"
     for idx, change in enumerate(changes):
@@ -256,14 +289,24 @@ for fname in glob("./mat/*-*.mat"):
                 continue
 
             for article in cur_articles:
-                tfidf_vec_article_list.append(vec2dense(article.tfidf, len_dictionary))
+                x = vec2dense(article.tfidf, len_dictionary)
+                hash_dict[hash(str(x))] = article.related or 1
+
+                tfidf_vec_article_list.append(x)
     print "Finished making list"
 
     tfidf_vec_article_train, tfidf_vec_article_test, tfidf_run_length_train, tfidf_run_length_test = train_test_split(tfidf_vec_article_list, run_length_list, test_size=0.33, random_state=42)
     del tfidf_vec_article_list
     del run_length_list
 
-    with open(outname+'-tfidf-train.vw','w') as f:
+    if is_weighted:
+        trainf = outname+'-tfidf-w-train.vw'
+        testf = outname+'-tfidf-w-test.vw'
+    else:
+        trainf = outname+'-tfidf-x-train.vw'
+        testf = outname+'-tfidf-x-test.vw'
+
+    with open(trainf,'w') as f:
         for vec, run in zip(tfidf_vec_article_train, tfidf_run_length_train):
             nonz = vec.nonzero()
 
@@ -271,9 +314,9 @@ for fname in glob("./mat/*-*.mat"):
             for x, y in zip(nonz[0], vec[nonz]):
                 ans += str(dictionary[x])+":"+str(y)+" "
                 
-            f.write(str(run+1) + " |" + ans[:-1] + "\n")
+            f.write(str(run+1) + " " + str(hash_dict[hash(str(vec))]) + " |" + ans[:-1] + "\n")
 
-    with open(outname+'-tfidf-test.vw','w') as f:
+    with open(testf,'w') as f:
         for vec, run in zip(tfidf_vec_article_test, tfidf_run_length_test):
             nonz = vec.nonzero()
 
@@ -281,9 +324,9 @@ for fname in glob("./mat/*-*.mat"):
             for x, y in zip(nonz[0], vec[nonz]):
                 ans += str(dictionary[x])+":"+str(y)+" "
                 
-            f.write(str(run+1) +" |"+ ans[:-1] + "\n")
+            f.write(str(run+1) + " " + str(hash_dict[hash(str(vec))]) + " |"+ ans[:-1] + "\n")
 
-    del tfidf_vec_article_train, tfidf_run_length_train, tfidf_vec_article_test, tfidf_run_length_test
+    del tfidf_vec_article_train, tfidf_run_length_train, tfidf_vec_article_test, tfidf_run_length_test, hash_dict
     del dictionary
     del article_dict
 
