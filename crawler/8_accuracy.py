@@ -13,7 +13,8 @@ from glob import glob
 losses = []
 
 try:
-    for testf in glob("./vw/*-test.vw"):
+    #for testf in glob("./vw/*-test.vw"):
+    for testf in glob("./mat/*-y-test.vw"):
     #for testf in ['./vw/AAPL-250-4000-2014-2015-log-test.vw']:
         trainf = testf.replace("test","train")
         modelf = testf.replace("test","model")
@@ -21,7 +22,7 @@ try:
         outf = testf.replace("test","out")
 
         cmd = "vw %s -t -i %s -p %s" % (testf, modelf, predf)
-        #print cmd
+        print cmd
         if not os.path.isfile(predf):
             os.system(cmd)
 
