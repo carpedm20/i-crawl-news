@@ -68,7 +68,8 @@ for fname in glob("./mat/*-*.mat"):
     else:
         test_name = outname+'-tfidf-x-test.vw'
 
-    if os.path.isfile(test_name):
+    #if os.path.isfile(test_name):
+    if False:
         print "%s already exists. continue..." % (test_name)
         continue
 

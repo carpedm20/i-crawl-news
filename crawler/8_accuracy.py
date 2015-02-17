@@ -13,8 +13,12 @@ from glob import glob
 losses = []
 
 try:
-    #for testf in glob("./vw/*-test.vw"):
-    for testf in glob("./mat/*-y-test.vw"):
+    #for testf in glob("./mat/*-w-test.vw"):
+    #for testf in glob("./mat/*-y-test.vw"):
+    for testf in glob("./vw/*-test.vw"):
+    #for testf in ["./vw/AAPL-250-4000-2011-2012-test.vw",
+    #              "./mat/AAPL-250-4000-2011-2012-y-test.vw"]:
+    #for testf in glob("./mat/*-y-test.vw"):
     #for testf in ['./vw/AAPL-250-4000-2014-2015-log-test.vw']:
         trainf = testf.replace("test","train")
         modelf = testf.replace("test","model")
@@ -23,17 +27,16 @@ try:
 
         cmd = "vw %s -t -i %s -p %s" % (testf, modelf, predf)
         print cmd
-        if not os.path.isfile(predf):
+        #if not os.path.isfile(predf):
+        if True:
             os.system(cmd)
 
         y_file = testf
         p_file = predf
 
         p = np.loadtxt( p_file )
-
-        y_predicted = np.ones(( p.shape[0] ))
-
         y = np.loadtxt( y_file, usecols= [0] )
+
         max_y = max(y)
 
         losses.append([testf, accuracy( y, p), max_y])
