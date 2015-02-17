@@ -23,7 +23,7 @@ class NewsSpider(Spider):
     name = "news"
     allowed_domains = ["google.com", "google.co.kr"]
 
-    def __init__ (self, month=4, year=2013, query="apple"):
+    def __init__ (self, month=4, year=2013, query="euro"):
         self.base_url = get_url(month, 1, year, month, 31, year, query)
         self.start_urls = [self.base_url]
 

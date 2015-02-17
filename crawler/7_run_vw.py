@@ -29,7 +29,7 @@ def get_cmd(testf, execute=False):
     cmd = "vw %s -t -i %s -p %s" % (testf, modelf, predf)
     print cmd
 
-#for testf in glob("./mat/*-w-test.vw"):
+#for testf in glob("./mat/*-y-test.vw"):
 for testf in glob("./vw/*-test.vw"):
     get_cmd(testf, True)
 

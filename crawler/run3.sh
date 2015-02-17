@@ -11,7 +11,7 @@ do
       if [ ! -f "$file" ]; then
         #echo "File $file not found!"
         echo "$name $i $j"
-        scrapy crawl news -a month=$j -a year=$i -a query=$name -o "$file"
+        scrapy crawl news -a month="$j" -a year=$i -a query="$name" -o "$file"
       else
         echo "File $file exist!"
         minimumsize=100000
@@ -21,7 +21,7 @@ do
         else
           echo " ==> need crawl"
           rm $file
-          scrapy crawl news -a month=$j -a year=$i -a query=$name -o "$file"
+          scrapy crawl news -a month=$j -a year=$i -a query="$name" -o "$file"
           #echo size is under $minimumsize bytes
         fi
       fi
