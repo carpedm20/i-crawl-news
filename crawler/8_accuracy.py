@@ -26,12 +26,13 @@ try:
         modelf = testf.replace("test","model")
         predf = testf.replace("test","pred")
         outf = testf.replace("test","out")
+        rawf = testf.replace("test","raw")
 
-        cmd = "vw %s -t -i %s -p %s" % (testf, modelf, predf)
+        cmd = "vw %s -t -i %s -p %s -r %s" % (testf, modelf, predf, rawf)
         print cmd
         #if not os.path.isfile(predf):
-        #if True:
-        if False:
+        if True:
+        #if False:
             os.system(cmd)
 
         y_file = testf

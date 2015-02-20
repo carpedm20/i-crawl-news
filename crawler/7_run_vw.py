@@ -19,15 +19,19 @@ def get_cmd(testf, execute=False):
 
     # vw-varinfo -c -b 24 --ngram 1 --passes 100 ./vw/GOOGL-1000-1000-2010-2014-train.vw
     #cmd = "vw -c %s --ngram 1 --passes 10000 --holdout_off -f %s 2>&1 | tee log.txt" % (trainf, modelf)
-    cmd = "vw -c %s --passes 20 --ngram 1 -f %s 2>&1 | tee log.txt" % (trainf, modelf)
+    a=open(trainf).readlines()
+    class_num = max([int(i.split('|')[0]) for i in a])
+    cmd = "vw -k -c --oaa %s %s --passes 20 --ngram 1 -f %s 2>&1 | tee log.txt" % (class_num+1, trainf, modelf)
+    print "==="
     print cmd
     if execute:
         os.system(cmd)
         with open('log.txt','r') as f:
-            losses.append([trainf, get_loss(f.read())])
+            pass
+            #losses.append([trainf, get_loss(f.read())])
 
     cmd = "vw %s -t -i %s -p %s" % (testf, modelf, predf)
-    print cmd
+    #print cmd
 
 #for testf in glob("./mat/*-y-test.vw"):
 for testf in glob("./vw/*-test.vw"):

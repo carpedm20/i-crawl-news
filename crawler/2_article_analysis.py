@@ -4,6 +4,7 @@ from newspaper import Article
 import json
 
 ARTICLE_DIR = "article"
+#ARTICLE_DIR = "money"
 
 articles = glob("./%s/*-article.json" % ARTICLE_DIR)
 articles.sort()
