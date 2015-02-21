@@ -11,12 +11,14 @@ from sklearn.feature_extraction.text import CountVectorizer
 import goose
 g = goose.Goose()
 
-ARTICLE_DIR = "article"
+#ARTICLE_DIR = "article"
+ARTICLE_DIR = "money"
 
-articles = glob("./%s/*-article.json" % ARTICLE_DIR)
+articles = glob("./%s/*-*.json" % ARTICLE_DIR)
 articles.sort()
 
-companies = ['ibm','microsoft']
+#companies = ['ibm','microsoft']
+companies = ['yuan','euro','yen','korea']
 
 vectorizer = CountVectorizer(analyzer = "word",
                              tokenizer = None,
@@ -27,10 +29,13 @@ vectorizer = CountVectorizer(analyzer = "word",
 clean_words = []
 
 for company in companies:
-    path = "./%s/%s-*-article.json" % (ARTICLE_DIR, company)
+    #path = "./%s/%s*-article.json" % (ARTICLE_DIR, company)
+    path = "./%s/%s*-*.json" % (ARTICLE_DIR, company)
 
     for article in glob(path):
-        bow = article.replace('/article/','/bow/').replace('article.json','bow.json')
+        bow = article.replace('/money/','/bow-money/').replace('.json','-bow.json')
+        print bow
+
         if isfile(bow):
             print " [!] %s already exists" % bow
             continue
