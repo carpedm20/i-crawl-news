@@ -14,7 +14,7 @@ articles = glob("./%s/*-*.json" % ARTICLE_DIR)
 articles.sort()
 
 #path = "./%s/*-article.json" % (ARTICLE_DIR)
-path = "./%s/*-*.json" % (ARTICLE_DIR)
+path = "./%s/*-12.json" % (ARTICLE_DIR)
 articles = glob(path)
 
 for article in articles:
@@ -29,6 +29,18 @@ for article in articles:
         try:
             text = article_i['text']
         except:
+            print "Gotcha",
+            try:
+                a = g.extract(article_i['href'])
+                article_i['text'] = a.cleaned_text
+            except:
+                article_i['text'] = ""
+
+            if not article_i['text']:
+                print "Failed",
+            continue
+
+        if article_i['text'] == '':
             print "Gotcha",
             try:
                 a = g.extract(article_i['href'])

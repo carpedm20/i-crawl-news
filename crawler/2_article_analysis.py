@@ -4,13 +4,14 @@ from newspaper import Article
 import json
 
 #ARTICLE_DIR = "backup"
-ARTICLE_DIR = "article"
-#ARTICLE_DIR = "money"
+#ARTICLE_DIR = "article"
+ARTICLE_DIR = "money"
 
 articles = glob("./%s/*-article.json" % ARTICLE_DIR)
 articles.sort()
 
-companies = ['google','apple','facebook', 'microsoft', 'ibm', 'oracle']
+#companies = ['google','apple','facebook', 'microsoft', 'ibm', 'oracle']
+companies = ['euro','yen','yuan', 'korea']
 years = range(2010,2015)
 
 month_dict = {"Jan":1,"Feb":2,"Mar":3,"Apr":4, "May":5, "Jun":6, "Jul":7,"Aug":8,"Sep":9,"Oct":10,"Nov":11,"Dec":12}
@@ -23,7 +24,7 @@ for company in companies:
     words = 0
     documents = 0
     for year in ['2010','2011','2012','2013','2014']:
-        path = "./%s/%s-%s*-article.json" % (ARTICLE_DIR, company, year)
+        path = "./%s/%s*-%s*.json" % (ARTICLE_DIR, company, year)
         #print path
 
         total = 0
@@ -55,7 +56,8 @@ for company in companies:
                     except:
                         error += 1"""
 
-        print company, year, len(article), total, count
+        #print company, year, len(article), total, count
+        print company, year, total, count
         #print "%s : %s : %s : %s" % (len(article), total, count, error)
         #print '%s,' % total,
         lll.append(str(total))
