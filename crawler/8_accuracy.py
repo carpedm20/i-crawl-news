@@ -23,7 +23,8 @@ if True:
     #for testf in glob("./mat/*-w-test.vw"):
     #for testf in glob("./mat/*-y-test.vw"):
     #for testf in glob("./new/AAPL*-2010-2015-log-x-test.vw"):
-    for testf in glob("./new/*-w-test.vw"):
+    #for testf in glob("./wnew/*-w-test.vw"):
+    for testf in glob("./new/*-x-test.vw"):
     #for testf in ["./vw/AAPL-250-4000-2011-2012-test.vw",
     #              "./mat/AAPL-250-4000-2011-2012-y-test.vw"]:
     #for testf in glob("./mat/*-y-test.vw"):

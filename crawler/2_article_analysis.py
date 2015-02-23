@@ -2,21 +2,26 @@
 from glob import glob
 from newspaper import Article
 import json
+import humanize
 
 #ARTICLE_DIR = "backup"
+
+#companies = ['google','apple','facebook', 'microsoft', 'ibm', 'oracle']
 #ARTICLE_DIR = "article"
+companies = ['euro','yen','yuan', 'korea']
 ARTICLE_DIR = "money"
 
 articles = glob("./%s/*-article.json" % ARTICLE_DIR)
 articles.sort()
 
-#companies = ['google','apple','facebook', 'microsoft', 'ibm', 'oracle']
-companies = ['euro','yen','yuan', 'korea']
 years = range(2010,2015)
 
 month_dict = {"Jan":1,"Feb":2,"Mar":3,"Apr":4, "May":5, "Jun":6, "Jul":7,"Aug":8,"Sep":9,"Oct":10,"Nov":11,"Dec":12}
 
 text_count = 0
+
+total_error=0
+total_document=0
 
 ll = []
 for company in companies:
@@ -56,13 +61,19 @@ for company in companies:
                     except:
                         error += 1"""
 
+        total_error += count
+        total_document += total
         #print company, year, len(article), total, count
-        print company, year, total, count
+        print company, year, total, count, error+count
         #print "%s : %s : %s : %s" % (len(article), total, count, error)
         #print '%s,' % total,
         lll.append(str(total))
-    print float(words)/documents
+    print "words", humanize.intword(words)
+    print "doc", humanize.intcomma(documents)
+    print "words/doc", humanize.intcomma(float(words)/documents)
     ll.append(",".join(lll))
     #print
 print ";\n".join(ll)
 print " Total text : %s" % text_count
+print " Total error: %s" % total_error
+print " Total document: %s" % total_document

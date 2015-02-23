@@ -29,7 +29,8 @@ company_dict = {'GOOGL':'google',
 #is_weighted = False
 #is_cutoff = False
 is_weighted = False
-is_cutoff = True 
+is_date_weighted = True
+is_cutoff = False
 max_interval = 7
 scale = 1000
 
@@ -63,7 +64,7 @@ class Article(object):
 #for fname in glob("./mat/*-%s-*.mat" % scale):
 for fname in glob("./mat/*-*.mat"):
     mat = scipy.io.loadmat(fname)
-    outname = fname[:-4].replace("mat","new")
+    outname = fname[:-4].replace("mat","wnew")
     #outname = fname[:-4]
 
     if is_weighted:
@@ -73,6 +74,8 @@ for fname in glob("./mat/*-*.mat"):
             test_name = outname+'-tfidf-w-test.vw'
     elif is_cutoff:
         test_name = outname+'-tfidf-y-test.vw'
+    elif is_date_weighted:
+        test_name = outname+'-tfidf-z-test.vw'
     else:
         test_name = outname+'-tfidf-x-test.vw'
 
@@ -188,15 +191,16 @@ for fname in glob("./mat/*-*.mat"):
             except:
                 continue
 
-            for article in cur_articles:
+            for jdx, article in enumerate(cur_articles):
                 norm = sum(num for (tmp, num) in article.corpus)
 
                 x = vec2dense(article.corpus, len_dictionary)/norm
-                if article.related / 100 > 1:
-                    hash_dict[hash(str(x))] = math.ceil(article.related/100)
-                else:
-                    hash_dict[hash(str(x))] = 1
-                run_dict[hash(str(x))] = gap
+                hash_dict[hash(str(x))] = len(cur_articles)-jdx
+                #if article.related > 1:
+                #    hash_dict[hash(str(x))] = article.related
+                #else:
+                #    hash_dict[hash(str(x))] = 1
+                run_dict[hash(str(x))] = run+gap
 
                 vec_article_list.append(x)
                 run_length_list.append(-gap)
@@ -215,6 +219,9 @@ for fname in glob("./mat/*-*.mat"):
     elif is_cutoff:
         trainf = outname+'-y-train.vw'
         testf = outname+'-y-test.vw'
+    elif is_date_weighted:
+        trainf = outname+'-z-train.vw'
+        testf = outname+'-z-test.vw'
     else:
         trainf = outname+'-x-train.vw'
         testf = outname+'-x-test.vw'
@@ -228,9 +235,11 @@ for fname in glob("./mat/*-*.mat"):
                 ans += str(dictionary[x])+":"+str(y)+" "
                 
             if is_weighted:
-                f.write(str(run+1) + " " + str(hash_dict[hash(str(vec))]) + " '" + str(run_dict[hash(str(vec))]) +  " |" + ans[:-1] + "\n")
+                f.write(str(run+1) + " " + str(hash_dict[hash(str(vec))]) +  " |" + ans[:-1] + "\n")
+            elif is_date_weighted:
+                f.write(str(run+1) +  " |" + ans[:-1] + " passed-run:"+str(run_dict[hash(str(vec))]) + "\n")
             else:
-                f.write(str(run+1) + " '" + str(run_dict[hash(str(vec))]) +  " |" + ans[:-1] + "\n")
+                f.write(str(run+1) +  " |" + ans[:-1] + "\n")
 
     with open(testf,'w') as f:
         for vec, run in zip(vec_article_test, run_length_test):
@@ -241,9 +250,11 @@ for fname in glob("./mat/*-*.mat"):
                 ans += str(dictionary[x])+":"+str(y)+" "
                 
             if is_weighted:
-                f.write(str(run+1) + " " + str(hash_dict[hash(str(vec))]) + " '" + str(run_dict[hash(str(vec))]) +  " |" + ans[:-1] + "\n")
+                f.write(str(run+1) + " " + str(hash_dict[hash(str(vec))]) +  " |" + ans[:-1] + "\n")
+            elif is_date_weighted:
+                f.write(str(run+1) +  " |" + ans[:-1] + " passed-run:"+str(run_dict[hash(str(vec))]) + "\n")
             else:
-                f.write(str(run+1) + " '" + str(run_dict[hash(str(vec))]) +  " |" + ans[:-1] + "\n")
+                f.write(str(run+1) +  " |" + ans[:-1] + "\n")
 
     del vec_article_test, run_length_test, vec_article_train, run_length_train, hash_dict
 
@@ -266,12 +277,14 @@ for fname in glob("./mat/*-*.mat"):
             except:
                 continue
 
-            for article in cur_articles:
+            #for article in cur_articles:
+            for jdx, article in enumerate(cur_articles):
                 x = np.log(1+vec2dense(article.corpus, len_dictionary))
-                if article.related / 100 > 1:
-                    hash_dict[hash(str(x))] = math.ceil(article.related/100)
-                else:
-                    hash_dict[hash(str(x))] = 1
+                hash_dict[hash(str(x))] = len(cur_articles)-jdx
+                #if article.related / 100 > 1:
+                #    hash_dict[hash(str(x))] = math.ceil(article.related/100)
+                #else:
+                #    hash_dict[hash(str(x))] = 1
                 run_dict[hash(str(x))] = gap
 
                 log_vec_article_list.append(x)
@@ -290,6 +303,9 @@ for fname in glob("./mat/*-*.mat"):
     elif is_cutoff:
         trainf = outname+'-log-y-train.vw'
         testf = outname+'-log-y-test.vw'
+    elif is_date_weighted:
+        trainf = outname+'-log-z-train.vw'
+        testf = outname+'-log-z-test.vw'
     else:
         trainf = outname+'-log-x-train.vw'
         testf = outname+'-log-x-test.vw'
@@ -303,9 +319,11 @@ for fname in glob("./mat/*-*.mat"):
                 ans += str(dictionary[x])+":"+str(y)+" "
                 
             if is_weighted:
-                f.write(str(run+1) + " " + str(hash_dict[hash(str(vec))]) + " '" + str(run_dict[hash(str(vec))]) +  " |" + ans[:-1] + "\n")
+                f.write(str(run+1) + " " + str(hash_dict[hash(str(vec))]) +  " |" + ans[:-1] + "\n")
+            elif is_date_weighted:
+                f.write(str(run+1) +  " |" + ans[:-1] + " passed-run:"+str(run_dict[hash(str(vec))]) + "\n")
             else:
-                f.write(str(run+1) + " '" + str(run_dict[hash(str(vec))]) +  " |" + ans[:-1] + "\n")
+                f.write(str(run+1) +  " |" + ans[:-1] + "\n")
 
     with open(testf,'w') as f:
         for vec, run in zip(log_vec_article_test, log_run_length_test):
@@ -316,9 +334,11 @@ for fname in glob("./mat/*-*.mat"):
                 ans += str(dictionary[x])+":"+str(y)+" "
                 
             if is_weighted:
-                f.write(str(run+1) +" " + str(hash_dict[hash(str(vec))]) + " '" + str(run_dict[hash(str(vec))]) +  " |"+ ans[:-1] + "\n")
+                f.write(str(run+1) +" " + str(hash_dict[hash(str(vec))]) +  " |"+ ans[:-1] + "\n")
+            elif is_date_weighted:
+                f.write(str(run+1) +  " |" + ans[:-1] + " passed-run:"+str(run_dict[hash(str(vec))]) + "\n")
             else:
-                f.write(str(run+1) + " '" + str(run_dict[hash(str(vec))]) +  " |" + ans[:-1] + "\n")
+                f.write(str(run+1) +  " |" + ans[:-1] + "\n")
 
     del log_vec_article_train, log_run_length_train, log_vec_article_test, log_run_length_test, hash_dict
 
@@ -341,12 +361,14 @@ for fname in glob("./mat/*-*.mat"):
             except:
                 continue
 
-            for article in cur_articles:
+            #for article in cur_articles:
+            for jdx, article in enumerate(cur_articles):
                 x = vec2dense(article.tfidf, len_dictionary)
-                if article.related / 100 > 1:
-                    hash_dict[hash(str(x))] = math.ceil(article.related/100)
-                else:
-                    hash_dict[hash(str(x))] = 1
+                hash_dict[hash(str(x))] = len(cur_articles)-jdx
+                #if article.related / 100 > 1:
+                #    hash_dict[hash(str(x))] = math.ceil(article.related/100)
+                #else:
+                #    hash_dict[hash(str(x))] = 1
                 run_dict[hash(str(x))] = gap
 
                 tfidf_vec_article_list.append(x)
@@ -366,6 +388,9 @@ for fname in glob("./mat/*-*.mat"):
     elif is_cutoff:
         trainf = outname+'-tfidf-y-train.vw'
         testf = outname+'-tfidf-y-test.vw'
+    elif is_date_weighted:
+        trainf = outname+'-tfidf-z-train.vw'
+        testf = outname+'-tfidf-z-test.vw'
     else:
         trainf = outname+'-tfidf-x-train.vw'
         testf = outname+'-tfidf-x-test.vw'
@@ -379,9 +404,11 @@ for fname in glob("./mat/*-*.mat"):
                 ans += str(dictionary[x])+":"+str(y)+" "
                 
             if is_weighted:
-                f.write(str(run+1) + " " + str(hash_dict[hash(str(vec))]) + " '" + str(run_dict[hash(str(vec))]) +  " |" + ans[:-1] + "\n")
+                f.write(str(run+1) + " " + str(hash_dict[hash(str(vec))]) +  " |" + ans[:-1] + "\n")
+            elif is_date_weighted:
+                f.write(str(run+1) +  " |" + ans[:-1] + " passed-run:"+str(run_dict[hash(str(vec))]) + "\n")
             else:
-                f.write(str(run+1) + " '" + str(run_dict[hash(str(vec))]) +  " |" + ans[:-1] + "\n")
+                f.write(str(run+1) +  " |" + ans[:-1] + "\n")
 
     with open(testf,'w') as f:
         for vec, run in zip(tfidf_vec_article_test, tfidf_run_length_test):
@@ -392,9 +419,11 @@ for fname in glob("./mat/*-*.mat"):
                 ans += str(dictionary[x])+":"+str(y)+" "
                 
             if is_weighted:
-                f.write(str(run+1) + " " + str(hash_dict[hash(str(vec))]) + " '" + str(run_dict[hash(str(vec))]) +  " |"+ ans[:-1] + "\n")
+                f.write(str(run+1) + " " + str(hash_dict[hash(str(vec))]) +  " |"+ ans[:-1] + "\n")
+            elif is_date_weighted:
+                f.write(str(run+1) +  " |" + ans[:-1] + " passed-run:"+str(run_dict[hash(str(vec))]) + "\n")
             else:
-                f.write(str(run+1) + " '" + str(run_dict[hash(str(vec))]) +  " |" + ans[:-1] + "\n")
+                f.write(str(run+1) +  " |" + ans[:-1] + "\n")
 
     del tfidf_vec_article_train, tfidf_run_length_train, tfidf_vec_article_test, tfidf_run_length_test, hash_dict
     del dictionary
