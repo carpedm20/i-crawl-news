@@ -15,7 +15,8 @@ articles = glob("./%s/*-*.json" % ARTICLE_DIR)
 articles.sort()
 
 #path = "./%s/*-article.json" % (ARTICLE_DIR)
-path = "./%s/*-*.json" % (ARTICLE_DIR)
+#path = "./%s/*-*.json" % (ARTICLE_DIR)
+path = "./%s/*-12.json" % (ARTICLE_DIR)
 articles = glob(path)
 
 for article in articles:

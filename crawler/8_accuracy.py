@@ -23,8 +23,8 @@ if True:
     #for testf in glob("./mat/*-w-test.vw"):
     #for testf in glob("./mat/*-y-test.vw"):
     #for testf in glob("./new/AAPL*-2010-2015-log-x-test.vw"):
-    #for testf in glob("./wnew/*-w-test.vw"):
     for testf in glob("./new/*-x-test.vw"):
+    #for testf in glob("./wnew/*-z-test.vw"):
     #for testf in ["./vw/AAPL-250-4000-2011-2012-test.vw",
     #              "./mat/AAPL-250-4000-2011-2012-y-test.vw"]:
     #for testf in glob("./mat/*-y-test.vw"):
@@ -38,8 +38,8 @@ if True:
         cmd = "vw %s -t -i %s -p %s -r %s" % (testf, modelf, predf, rawf)
         print cmd
         #if not os.path.isfile(predf):
-        if True:
-        #if False:
+        #if True:
+        if False:
             os.system(cmd)
 
         y_file = testf
@@ -75,12 +75,39 @@ else:
 
     print "====================================="
             
+    ll = []
     losses = sorted(losses, key=itemgetter(0))
     for com in ['AAPL','FB','GOOGL','IBM','MSFT']:
         for ex in ['log','tfidf']:
-            for i, j, k in losses:
-                if com in i and ex in i:
-                    print "%s\t%.4f\t%s" % (i, j, k)
-        for i, j, k in losses:
-            if com in i and 'log' not in i and 'tfidf' not in i:
-                print "%s\t%.4f\t%s" % (i, j, k)
+            target = "\n%s,%s" % (com,ex)
+            if target not in ll:
+                print target
+                ll.append(target)
+            if com == 'FB':
+                for year in ['2011-2012','2012-2013','2013-2014','2014-2015','2011-2015']:
+                    for i, j, k in losses:
+                        if com in i and ex in i and year in i:
+                            print "%s\t%.4f\t%s" % (i, j, k)
+                            #print "& %.4f\t" % j,
+            else:
+                for year in ['2010-2011','2011-2012','2012-2013','2013-2014','2014-2015','2010-2015']:
+                    for i, j, k in losses:
+                        if com in i and ex in i and year in i:
+                            print "%s\t%.4f\t%s" % (i, j, k)
+                            #print "& %.4f\t" % j,
+        target = "\n%s,x" % (com)
+        if target not in ll:
+            print target
+            ll.append(target)
+        if com == 'FB':
+            for year in ['2011-2012','2012-2013','2013-2014','2014-2015','2011-2015']:
+                for i, j, k in losses:
+                    if com in i and 'log' not in i and 'tfidf' not in i and year in i:
+                        print "%s\t%.4f\t%s" % (i, j, k)
+                        #print "& %.4f\t" % j,
+        else:
+            for year in ['2010-2011','2011-2012','2012-2013','2013-2014','2014-2015','2010-2015']:
+                for i, j, k in losses:
+                    if com in i and 'log' not in i and 'tfidf' not in i and year in i:
+                        print "%s\t%.4f\t%s" % (i, j, k)
+                        #print "& %.4f\t" % j,
