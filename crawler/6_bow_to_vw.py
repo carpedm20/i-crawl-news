@@ -24,7 +24,14 @@ company_dict = {'GOOGL':'google',
                 'AAPL' :'apple',
                 'FB'   :'facebook',
                 'IBM'   :'ibm',
-                'MSFT'   :'microsoft'}
+                'MSFT'   :'microsoft',
+                'avengeers' : 'the avengers movie',
+                'frozen' : 'frozen movie',
+                'inception' : 'inception movie',
+                'knight' : 'the dark knight',
+                'JPY': 'yen',
+                'KRW': 'korea won',
+                'EUR': 'euro' }
 
 #is_weighted = True
 #is_cutoff = True
@@ -81,6 +88,7 @@ for fname in glob("./mat/*-*.mat"):
     else:
         test_name = outname+'-tfidf-x-test.vw'
 
+    print test_name
     if os.path.isfile(test_name):
     #if False:
         print "%s already exists. continue..." % (test_name)
