@@ -1,5 +1,8 @@
 *.txt
 *.vw
+*.vw*
+*/new/*
+*/wnew/*
 *.json
 log*
 *.zip
@@ -8,6 +11,9 @@ crawler/mat/
 */data/*
 */vw/*
 */old_vw/*
+
+#ipython
+*.ipynb_checkpoints/
 
 ### vim ###
 [._]*.s[a-w][a-z]

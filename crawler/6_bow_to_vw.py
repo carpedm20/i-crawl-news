@@ -4,11 +4,13 @@ import gc
 import os
 import json
 import time
+import math 
 import pickle
 import datetime
 import scipy.io
 import numpy as np
 from glob import glob
+from collections import Counter
 
 from news_list import news_list
 
@@ -29,7 +31,7 @@ company_dict = {'GOOGL':'google',
 #is_weighted = False
 #is_cutoff = False
 is_weighted = False
-is_date_weighted = True
+is_date_weighted = False
 is_cutoff = False
 max_interval = 7
 scale = 1000
@@ -79,8 +81,8 @@ for fname in glob("./mat/*-*.mat"):
     else:
         test_name = outname+'-tfidf-x-test.vw'
 
-    #if os.path.isfile(test_name):
-    if False:
+    if os.path.isfile(test_name):
+    #if False:
         print "%s already exists. continue..." % (test_name)
         continue
 
@@ -143,7 +145,7 @@ for fname in glob("./mat/*-*.mat"):
             changes.append(idx-1)
             runs.append(idx-1-pos)
             pos = idx-1
-            
+
     print "%s~%s from %s. # of CP : %s" % (start_y,end_y, company, len(changes))
     print "Text processing start"
 
@@ -206,6 +208,15 @@ for fname in glob("./mat/*-*.mat"):
                 run_length_list.append(-gap)
     print "Finished making list"
 
+    run_counter = Counter(run_length_list)
+    new_run_dicts = []
+    for i,j in run_counter.items():
+        j=1.0/j
+        new_run_dicts.append((i,j))
+
+    inverse_run_min = min([j for (i,j) in new_run_dicts])
+    run_counter = dict([(i,int(math.ceil(j/inverse_run_min))) for (i,j) in new_run_dicts])
+            
     vec_article_train, vec_article_test, run_length_train, run_length_test = train_test_split(vec_article_list, run_length_list, test_size=0.33, random_state=42)
     del vec_article_list
 
@@ -226,6 +237,9 @@ for fname in glob("./mat/*-*.mat"):
         trainf = outname+'-x-train.vw'
         testf = outname+'-x-test.vw'
 
+    print trainf
+    print testf
+
     with open(trainf,'w') as f:
         for vec, run in zip(vec_article_train, run_length_train):
             nonz = vec.nonzero()
@@ -237,9 +251,9 @@ for fname in glob("./mat/*-*.mat"):
             if is_weighted:
                 f.write(str(run+1) + " " + str(hash_dict[hash(str(vec))]) +  " |" + ans[:-1] + "\n")
             elif is_date_weighted:
-                f.write(str(run+1) +  " |" + ans[:-1] + " passed-run:"+str(run_dict[hash(str(vec))]) + "\n")
+                f.write(str(run+1) + " " + str(run_counter[run]) + " |" + ans[:-1] + " passed-run:"+str(run_dict[hash(str(vec))]) + "\n")
             else:
-                f.write(str(run+1) +  " |" + ans[:-1] + "\n")
+                f.write(str(run+1) + " " + str(run_counter[run]) + " |" + ans[:-1] + "\n")
 
     with open(testf,'w') as f:
         for vec, run in zip(vec_article_test, run_length_test):
@@ -252,9 +266,9 @@ for fname in glob("./mat/*-*.mat"):
             if is_weighted:
                 f.write(str(run+1) + " " + str(hash_dict[hash(str(vec))]) +  " |" + ans[:-1] + "\n")
             elif is_date_weighted:
-                f.write(str(run+1) +  " |" + ans[:-1] + " passed-run:"+str(run_dict[hash(str(vec))]) + "\n")
+                f.write(str(run+1) + " " + str(run_counter[run]) + " |" + ans[:-1] + " passed-run:"+str(run_dict[hash(str(vec))]) + "\n")
             else:
-                f.write(str(run+1) +  " |" + ans[:-1] + "\n")
+                f.write(str(run+1) + " " + str(run_counter[run]) + " |" + ans[:-1] + "\n")
 
     del vec_article_test, run_length_test, vec_article_train, run_length_train, hash_dict
 
@@ -321,9 +335,9 @@ for fname in glob("./mat/*-*.mat"):
             if is_weighted:
                 f.write(str(run+1) + " " + str(hash_dict[hash(str(vec))]) +  " |" + ans[:-1] + "\n")
             elif is_date_weighted:
-                f.write(str(run+1) +  " |" + ans[:-1] + " passed-run:"+str(run_dict[hash(str(vec))]) + "\n")
+                f.write(str(run+1) + " " + str(run_counter[run]) +  " |" + ans[:-1] + " passed-run:"+str(run_dict[hash(str(vec))]) + "\n")
             else:
-                f.write(str(run+1) +  " |" + ans[:-1] + "\n")
+                f.write(str(run+1) + " " + str(run_counter[run]) +  " |" + ans[:-1] + "\n")
 
     with open(testf,'w') as f:
         for vec, run in zip(log_vec_article_test, log_run_length_test):
@@ -336,9 +350,9 @@ for fname in glob("./mat/*-*.mat"):
             if is_weighted:
                 f.write(str(run+1) +" " + str(hash_dict[hash(str(vec))]) +  " |"+ ans[:-1] + "\n")
             elif is_date_weighted:
-                f.write(str(run+1) +  " |" + ans[:-1] + " passed-run:"+str(run_dict[hash(str(vec))]) + "\n")
+                f.write(str(run+1) + " " + str(run_counter[run]) +  " |" + ans[:-1] + " passed-run:"+str(run_dict[hash(str(vec))]) + "\n")
             else:
-                f.write(str(run+1) +  " |" + ans[:-1] + "\n")
+                f.write(str(run+1) + " " + str(run_counter[run]) +  " |" + ans[:-1] + "\n")
 
     del log_vec_article_train, log_run_length_train, log_vec_article_test, log_run_length_test, hash_dict
 
@@ -406,9 +420,9 @@ for fname in glob("./mat/*-*.mat"):
             if is_weighted:
                 f.write(str(run+1) + " " + str(hash_dict[hash(str(vec))]) +  " |" + ans[:-1] + "\n")
             elif is_date_weighted:
-                f.write(str(run+1) +  " |" + ans[:-1] + " passed-run:"+str(run_dict[hash(str(vec))]) + "\n")
+                f.write(str(run+1) + " " + str(run_counter[run]) +  " |" + ans[:-1] + " passed-run:"+str(run_dict[hash(str(vec))]) + "\n")
             else:
-                f.write(str(run+1) +  " |" + ans[:-1] + "\n")
+                f.write(str(run+1) + " " + str(run_counter[run]) +  " |" + ans[:-1] + "\n")
 
     with open(testf,'w') as f:
         for vec, run in zip(tfidf_vec_article_test, tfidf_run_length_test):
@@ -421,9 +435,9 @@ for fname in glob("./mat/*-*.mat"):
             if is_weighted:
                 f.write(str(run+1) + " " + str(hash_dict[hash(str(vec))]) +  " |"+ ans[:-1] + "\n")
             elif is_date_weighted:
-                f.write(str(run+1) +  " |" + ans[:-1] + " passed-run:"+str(run_dict[hash(str(vec))]) + "\n")
+                f.write(str(run+1) + " " + str(run_counter[run]) +  " |" + ans[:-1] + " passed-run:"+str(run_dict[hash(str(vec))]) + "\n")
             else:
-                f.write(str(run+1) +  " |" + ans[:-1] + "\n")
+                f.write(str(run+1) + " " + str(run_counter[run]) +  " |" + ans[:-1] + "\n")
 
     del tfidf_vec_article_train, tfidf_run_length_train, tfidf_vec_article_test, tfidf_run_length_test, hash_dict
     del dictionary

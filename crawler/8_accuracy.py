@@ -16,14 +16,17 @@ losses = []
 error_dict = {}
 
 #accuracy_check_mode = True # with numpy
-accuracy_check_mode = False # with numpy
+accuracy_check_mode = False# with numpy
+#accuracy_check_mode = False # with numpy
 
 #try:
 if True:
     #for testf in glob("./mat/*-w-test.vw"):
     #for testf in glob("./mat/*-y-test.vw"):
     #for testf in glob("./new/AAPL*-2010-2015-log-x-test.vw"):
-    for testf in glob("./new/*-x-test.vw"):
+    #for testf in glob("./wnew/*-2010-2015-log-z-test.vw"):
+    #for testf in glob("./wnew/AAPL*-log-x-test.vw"):
+    for testf in glob("./wnew/AAPL*-x-test.evw"):
     #for testf in glob("./wnew/*-z-test.vw"):
     #for testf in ["./vw/AAPL-250-4000-2011-2012-test.vw",
     #              "./mat/AAPL-250-4000-2011-2012-y-test.vw"]:
@@ -38,8 +41,7 @@ if True:
         cmd = "vw %s -t -i %s -p %s -r %s" % (testf, modelf, predf, rawf)
         print cmd
         #if not os.path.isfile(predf):
-        #if True:
-        if False:
+        if not accuracy_check_mode:
             os.system(cmd)
 
         y_file = testf
@@ -51,7 +53,7 @@ if True:
 
         if accuracy_check_mode:
             lines = open(trainf).readlines()
-            q = [-int(l.split(" '", 1)[1].split(" ", 1)[0]) for l in lines]
+            #q = [-int(l.split(" '", 1)[1].split(" ", 1)[0]) for l in lines]
             #for (i, j) in zip(y, y-p):
             for (i, j) in zip(y, p):
                 #print i, j
@@ -66,12 +68,13 @@ if True:
 if len(losses[0]) == 2:
     #for i in losses:
     #    print i
+    print "just pass"
     pass
 else:
     from operator import itemgetter
     losses = sorted(losses, key=itemgetter(1))
     for i, j, k in losses:
-        print "%s\t%.4f\t%s" % (i, j, k)
+        print "%s  %.4f  %s" % (i, j, k)
 
     print "====================================="
             
@@ -83,31 +86,48 @@ else:
             if target not in ll:
                 print target
                 ll.append(target)
+            avg = 0
+            if ex == 'log':
+                print "& LOG1P+  ",
+            else:
+                print "& TFIDF+  ",
             if com == 'FB':
+                print "&   ",
                 for year in ['2011-2012','2012-2013','2013-2014','2014-2015','2011-2015']:
                     for i, j, k in losses:
                         if com in i and ex in i and year in i:
-                            print "%s\t%.4f\t%s" % (i, j, k)
-                            #print "& %.4f\t" % j,
+                            #print "%s  %.4f  %s" % (i, j, k)
+                            print "& %.4f  " % j,
+                            avg += float(j)
+                print "& %.4f   \\\\" % (avg/5),
             else:
                 for year in ['2010-2011','2011-2012','2012-2013','2013-2014','2014-2015','2010-2015']:
                     for i, j, k in losses:
                         if com in i and ex in i and year in i:
-                            print "%s\t%.4f\t%s" % (i, j, k)
-                            #print "& %.4f\t" % j,
+                            #print "%s  %.4f  %s" % (i, j, k)
+                            print "& %.4f  " % j,
+                            avg += float(j)
+                print "& %.4f   \\\\" % (avg/6),
+        avg = 0
         target = "\n%s,x" % (com)
         if target not in ll:
             print target
             ll.append(target)
+        print "& TF+  ",
         if com == 'FB':
+            print "&   ",
             for year in ['2011-2012','2012-2013','2013-2014','2014-2015','2011-2015']:
                 for i, j, k in losses:
                     if com in i and 'log' not in i and 'tfidf' not in i and year in i:
-                        print "%s\t%.4f\t%s" % (i, j, k)
-                        #print "& %.4f\t" % j,
+                        #print "%s  %.4f  %s" % (i, j, k)
+                        print "& %.4f  " % j,
+                        avg += float(j)
+            print "& %.4f   \\\\" % (avg/6),
         else:
             for year in ['2010-2011','2011-2012','2012-2013','2013-2014','2014-2015','2010-2015']:
                 for i, j, k in losses:
                     if com in i and 'log' not in i and 'tfidf' not in i and year in i:
-                        print "%s\t%.4f\t%s" % (i, j, k)
-                        #print "& %.4f\t" % j,
+                        #print "%s  %.4f  %s" % (i, j, k)
+                        print "& %.4f  " % j,
+                        avg += float(j)
+            print "& %.4f \\\\" % (avg/6),
