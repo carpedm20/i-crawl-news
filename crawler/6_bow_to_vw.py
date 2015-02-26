@@ -25,7 +25,7 @@ company_dict = {'GOOGL':'google',
                 'FB'   :'facebook',
                 'IBM'   :'ibm',
                 'MSFT'   :'microsoft',
-                'avengeers' : 'the avengers movie',
+                'avengers' : 'the avengers movie',
                 'frozen' : 'frozen movie',
                 'inception' : 'inception movie',
                 'knight' : 'the dark knight',
@@ -71,7 +71,7 @@ class Article(object):
 
 #for fname in glob("./mat/*-%s-*.mat" % scale):
 #for fname in glob("./mat/*-%s-*.mat" % scale):
-for fname in glob("./mat/*-*.mat"):
+for fname in glob("./mat/JPY*-*.mat") + glob("./mat/AAPL*-*.mat"):
     mat = scipy.io.loadmat(fname)
     outname = fname[:-4].replace("mat","wnew")
     #outname = fname[:-4]
@@ -89,8 +89,8 @@ for fname in glob("./mat/*-*.mat"):
         test_name = outname+'-tfidf-x-test.vw'
 
     print test_name
-    #if os.path.isfile(test_name):
-    if False:
+    if os.path.isfile(test_name):
+    #if False:
         print "%s already exists. continue..." % (test_name)
         continue
 
@@ -125,6 +125,12 @@ for fname in glob("./mat/*-*.mat"):
             dd = u'2010-01-01'
         if dd == u'2011-01-':
             dd = u'2011-01-01'
+        if dd == u'2012-01-':
+            dd = u'2012-01-01'
+        if dd == u'2013-01-0':
+            dd = u'2013-01-01'
+        if dd == u'2014-01-':
+            dd = u'2014-01-01'
 
         try:
             dates.append(datetime.datetime.strptime(dd, "%d-%b-%y").date())

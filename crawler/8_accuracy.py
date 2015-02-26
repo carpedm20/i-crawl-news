@@ -27,7 +27,8 @@ if True:
     #for testf in glob("./wnew/*-2010-2015-log-z-test.vw"):
     #for testf in glob("./wnew/AAPL*-log-x-test.vw"):
     #for testf in glob("./wnew/*2010-2015*-x-test.evw"):
-    for testf in glob("./wnew/JPY*-test.vw"):
+    #for testf in glob("./wnew/JPY*-test.vw"):
+    for testf in glob("./wnew/*-x-test.vw"):
     #for testf in glob("./wnew/*-z-test.vw"):
     #for testf in ["./vw/AAPL-250-4000-2011-2012-test.vw",
     #              "./mat/AAPL-250-4000-2011-2012-y-test.vw"]:
@@ -41,15 +42,22 @@ if True:
 
         cmd = "vw %s -t -i %s -p %s -r %s" % (testf, modelf, predf, rawf)
         print cmd
-        #if not os.path.isfile(predf):
-        if not accuracy_check_mode:
+        if not os.path.isfile(predf):
+        #if not accuracy_check_mode:
             os.system(cmd)
 
         y_file = testf
         p_file = predf
 
-        p = np.loadtxt(p_file, usecols=[0])
-        y = np.loadtxt(y_file, usecols=[0])
+        try:
+            p = np.loadtxt(p_file, usecols=[0])
+        except:
+            continue
+        try:
+            y = np.loadtxt(y_file, usecols=[0])
+        except:
+            print "ERROR : %s" % y_file
+            continue
         max_y = max(y)
 
         if accuracy_check_mode:
@@ -80,8 +88,9 @@ else:
     print "====================================="
             
     ll = []
+    plus = "+"
     losses = sorted(losses, key=itemgetter(0))
-    for com in ['AAPL','FB','GOOGL','IBM','MSFT']:
+    for com in ['AAPL','FB','GOOGL','IBM','MSFT','EUR','KRW','JPY','knight','inception','frozne','avengers']:
         for ex in ['log','tfidf']:
             target = "\n%s,%s" % (com,ex)
             if target not in ll:
@@ -94,7 +103,7 @@ else:
                 print "& TFIDF+  ",
             if com == 'FB':
                 print "&   ",
-                for year in ['2011-2012','2012-2013','2013-2014','2014-2015','2011-2015']:
+                for year in ['2012-2012','2013-2013','2014-2014','2012-2014']:
                     for i, j, k in losses:
                         if com in i and ex in i and year in i:
                             #print "%s  %.4f  %s" % (i, j, k)
@@ -102,7 +111,7 @@ else:
                             avg += float(j)
                 print "& %.4f   \\\\" % (avg/5),
             else:
-                for year in ['2010-2011','2011-2012','2012-2013','2013-2014','2014-2015','2010-2015']:
+                for year in ['2010-2010','2011-2011','2012-2012','2013-2013','2014-2014','2010-2014']:
                     for i, j, k in losses:
                         if com in i and ex in i and year in i:
                             #print "%s  %.4f  %s" % (i, j, k)
@@ -117,7 +126,7 @@ else:
         print "& TF+  ",
         if com == 'FB':
             print "&   ",
-            for year in ['2011-2012','2012-2013','2013-2014','2014-2015','2011-2015']:
+            for year in ['2012-2012','2013-2013','2014-2014','2012-2014']:
                 for i, j, k in losses:
                     if com in i and 'log' not in i and 'tfidf' not in i and year in i:
                         #print "%s  %.4f  %s" % (i, j, k)
@@ -125,7 +134,7 @@ else:
                         avg += float(j)
             print "& %.4f   \\\\" % (avg/6),
         else:
-            for year in ['2010-2011','2011-2012','2012-2013','2013-2014','2014-2015','2010-2015']:
+            for year in ['2010-2010','2011-2011','2012-2012','2013-2013','2014-2014','2010-2014']:
                 for i, j, k in losses:
                     if com in i and 'log' not in i and 'tfidf' not in i and year in i:
                         #print "%s  %.4f  %s" % (i, j, k)
