@@ -38,7 +38,8 @@ for company in companies:
         bow = article.replace('/%s/' % ARTICLE_DIR,'/bow-%s/' % ARTICLE_DIR).replace('.json','-bow.json')
         print bow
 
-        if isfile(bow):
+        #if isfile(bow):
+        if False:
             print " [!] %s already exists" % bow
             continue
         else:
