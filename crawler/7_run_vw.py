@@ -41,7 +41,7 @@ def get_cmd(testf, execute=False):
 
 #for testf in glob("./mat/*-y-test.vw"):
 #for testf in glob("./new/*-test.vw"):
-for testf in glob("./wnew/*-test.evw"):
+for testf in glob("./wnew/JPY*-test.vw"):
     get_cmd(testf, True)
 
 #testf = "./vw/GOOGL-200-5000-2013-2014-tfidf-test.vw"

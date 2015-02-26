@@ -6,15 +6,30 @@ import humanize
 
 #ARTICLE_DIR = "backup"
 
+"""company_dict = {'GOOGL':'google',
+                'AAPL' :'apple',
+                'FB'   :'facebook',
+                'IBM'   :'ibm',
+                'MSFT'   :'microsoft',
+                'avengeers' : 'the avengers movie',
+                'frozen' : 'frozen movie',
+                'inception' : 'inception movie',
+                'knight' : 'the dark knight',
+                'JPY': 'yen',
+                'KRW': 'korea won',
+                'EUR': 'euro' }"""
+
 #companies = ['google','apple','facebook', 'microsoft', 'ibm', 'oracle']
 #ARTICLE_DIR = "article"
-companies = ['euro','yen','yuan', 'korea']
-ARTICLE_DIR = "money"
+#companies = ['euro','yen','yuan', 'korea']
+#ARTICLE_DIR = "money"
+companies = ['the avengers movie','frozen movie','inception movie','the dark knight']
+ARTICLE_DIR = "movie"
 
 articles = glob("./%s/*-article.json" % ARTICLE_DIR)
 articles.sort()
 
-years = range(2010,2015)
+years = range(2008,2015)
 
 month_dict = {"Jan":1,"Feb":2,"Mar":3,"Apr":4, "May":5, "Jun":6, "Jul":7,"Aug":8,"Sep":9,"Oct":10,"Nov":11,"Dec":12}
 
@@ -28,7 +43,7 @@ for company in companies:
     lll = []
     words = 0
     documents = 0
-    for year in ['2010','2011','2012','2013','2014']:
+    for year in years:
         path = "./%s/%s*-%s*.json" % (ARTICLE_DIR, company, year)
         #print path
 

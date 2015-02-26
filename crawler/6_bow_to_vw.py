@@ -89,8 +89,8 @@ for fname in glob("./mat/*-*.mat"):
         test_name = outname+'-tfidf-x-test.vw'
 
     print test_name
-    if os.path.isfile(test_name):
-    #if False:
+    #if os.path.isfile(test_name):
+    if False:
         print "%s already exists. continue..." % (test_name)
         continue
 
@@ -103,11 +103,36 @@ for fname in glob("./mat/*-*.mat"):
     R = mat.get('R')
     maxes = mat.get('maxes')
     data = mat.get('X')[0]
-    mat_dates = mat.get('date')[0]
+
+    if type(mat.get('date')) == list:
+        mat_dates = mat.get('date')[0]
+    else:
+        mat_dates = mat.get('date')
+
+    if type(mat.get('date')) == np.ndarray and type(mat.get('date')[0]) != np.unicode_:
+        mat_dates = mat_dates[0]
 
     dates = []
     for date in mat_dates:
-        dates.append(datetime.datetime.strptime(date[0], "%d-%b-%y").date())
+        if type(date) == list:
+            dd = date[0]
+        elif type(date) == np.ndarray:
+            dd = date[0]
+        else:
+            dd = date
+
+        if dd == u'2010-01-':
+            dd = u'2010-01-01'
+        if dd == u'2011-01-':
+            dd = u'2011-01-01'
+
+        try:
+            dates.append(datetime.datetime.strptime(dd, "%d-%b-%y").date())
+        except:
+            try:
+                dates.append(datetime.datetime.strptime(dd, "%Y-%m-%d").date())
+            except:
+                dates.append(datetime.datetime.strptime(dd, "%d-%b-%Y").date())
 
     bows = []
     for ffname in glob("./bow/%s-*-bow.json" % company):
@@ -129,7 +154,11 @@ for fname in glob("./mat/*-*.mat"):
             d = datetime.datetime.strptime(bow['date'], "%b %d, %Y").date()
         except:
             continue
-        text = bow['words']
+
+        try:
+            text = bow['words']
+        except:
+            continue
         if text != "":
             article = Article(count, text, bow['href'], d, bow['related'])
             articles.append(article)
@@ -187,8 +216,10 @@ for fname in glob("./mat/*-*.mat"):
 
     print "Making list"
     for idx, change in enumerate(changes):
-        date = dates[idx]
+        date = dates[change]
         run = runs[idx]
+        #print date
+        #print run
 
         #if run > max_interval:
         #    run = max_interval
@@ -285,7 +316,7 @@ for fname in glob("./mat/*-*.mat"):
 
     print "Making list"
     for idx, change in enumerate(changes):
-        date = dates[idx]
+        date = dates[change]
         run = runs[idx]
 
         #if run > max_interval:
@@ -369,7 +400,7 @@ for fname in glob("./mat/*-*.mat"):
 
     print "Making list"
     for idx, change in enumerate(changes):
-        date = dates[idx]
+        date = dates[change]
         run = runs[idx]
 
         #if run > max_interval:
