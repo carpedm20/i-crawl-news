@@ -19,10 +19,10 @@ import humanize
                 'KRW': 'korea won',
                 'EUR': 'euro' }"""
 
-#companies = ['google','apple','facebook', 'microsoft', 'ibm', 'oracle']
-#ARTICLE_DIR = "article"
-companies = ['euro','yen','yuan', 'korea']
-ARTICLE_DIR = "money"
+companies = ['google','apple','facebook', 'microsoft', 'ibm', 'oracle']
+ARTICLE_DIR = "article"
+#companies = ['euro','yen','yuan', 'korea']
+#ARTICLE_DIR = "money"
 #companies = ['the dark knight','inception movie','the avengers movie','frozen movie','interstellar movie']
 #ARTICLE_DIR = "movie"
 
@@ -84,7 +84,7 @@ for company in companies:
         #print "%s : %s : %s : %s" % (len(article), total, count, error)
         #print '%s,' % total,
         lll.append(str(total))
-    print "words", humanize.intword(words)
+    print "words", humanize.intword(words), ":", words
     print "doc", humanize.intcomma(documents)
     print "words/doc", humanize.intcomma(float(words)/documents)
     ll.append(",".join(lll))

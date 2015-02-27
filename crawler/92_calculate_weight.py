@@ -31,13 +31,18 @@ company_dict = {'GOOGL':'google',
                 'EUR': 'euro' }
 
 for fname in glob("./mat/*-*.mat"):
-    if 'prob' in fname:
+    if '-250-4000-' not in fname:
         continue
 
-    outname = fname[:-4].replace("mat","wnew")
+    if 'interstellar' in fname:
+        continue
+
+    #outname = fname[:-4].replace("mat","wnew")
+    outname = fname.replace('-250-4000-','-weight2-')
     dicname = fname.replace('-250-4000-','-prob-')+'-dic.pkl'
 
-    if os.path.isfile(outname):
+    #if os.path.isfile(outname):
+    if False:
         print "%s already exists. continue..." % (outname)
         continue
     print "%s -> %s" % (fname, outname)
@@ -46,14 +51,33 @@ for fname in glob("./mat/*-*.mat"):
 
     #Formats data for graph
 
-    with open("wnew/AAPL-250-4000-2010-2010-log-z-train.evw.info") as infile:
-        d = {}
+    d = {}
+    infoname = fname.replace('mat','wnew',1).replace('.mat','-tfidf-z-train.evw.info')
+    with open(infoname) as infile:
         for e, line in enumerate( infile.readlines() ):
             if e > 0:
                 token = line.strip().split("\t")[0][1:].strip()
                 value = line.strip().split("\t")[1].split()[-2]
                 d[token] = float(value)/float(100)
+    infoname = fname.replace('mat','wnew',1).replace('.mat','-tfidf-z-test.evw.info')
+    with open(infoname) as infile:
+        for e, line in enumerate( infile.readlines() ):
+            if e > 0:
+                token = line.strip().split("\t")[0][1:].strip()
+                value = line.strip().split("\t")[1].split()[-2]
+                #value = line.strip().split("\t")[1].split(" ")[-1][:-1]
+                d[token] = float(value)/float(100)
 
+    weight = np.zeros((len(dic),1))
 
-    for word in dic:
+    error = 0
+    for key, value in dic.items():
+        try:
+            weight[key] = d[value]
+        except:
+            error+=1
+            pass
+    print "%s : %s -> %s" % (len(dic), len(d), error)
 
+    scipy.io.savemat(outname, mdict={'weight':weight})
+    print " > %s complete" % (outname) 

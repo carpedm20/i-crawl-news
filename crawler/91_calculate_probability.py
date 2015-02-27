@@ -69,13 +69,18 @@ class Article(object):
         self.corpus = None
 
 for fname in glob("./mat/*-*.mat"):
-    if 'prob' in fname:
+    if 'prob' in fname or 'weight' in fname or 'dic' in fname:
         continue
 
     outname = fname.replace('-250-4000-','-prob-')
-    if os.path.isfile(outname):
-        print "%s already exists. continue..." % (outname)
+    dicname = outname.replace('-prob-','-dic-')
+    countname = outname.replace('-prob-','-count-')
+
+    #if os.path.isfile(dicname):
+    if False:
+        print "%s already exists. continue..." % (dicname)
         continue
+
     print "%s -> %s" % (fname, outname)
 
     mat = scipy.io.loadmat(fname)
@@ -198,46 +203,76 @@ for fname in glob("./mat/*-*.mat"):
         articles[idx].tfidf = doc
         articles[idx].corpus = corpus[idx]
 
-    vec_article_list = []
-    run_length_list = []
-    log_vec_article_list = []
-    tfidf_vec_article_list = []
+    if not os.path.isfile(outname):
 
-    hash_dict = {}
-    run_dict = {}
+        vec_article_list = []
+        run_length_list = []
+        log_vec_article_list = []
+        tfidf_vec_article_list = []
 
-    prob=np.ones((len(dictionary),150))
+        hash_dict = {}
+        run_dict = {}
 
-    for idx, change in enumerate(changes):
-        date = dates[change]
-        run = runs[idx]
+        prob=np.ones((len(dictionary),150))
 
-        for gap in xrange(-run, 1):
-            new_date = date + gap * datetime.timedelta(days=1)
+        for idx, change in enumerate(changes):
+            date = dates[change]
+            run = runs[idx]
 
-            try:
-                cur_articles = article_dict[new_date]
-            except:
-                continue
+            for gap in xrange(-run, 1):
+                new_date = date + gap * datetime.timedelta(days=1)
 
-            for jdx, article in enumerate(cur_articles):
-                words = [i for (i,j) in article.corpus]
+                try:
+                    cur_articles = article_dict[new_date]
+                except:
+                    continue
 
-                for word in words:
-                    prob[word][-gap] += 1
-                #norm = sum(num for (tmp, num) in article.corpus)
-                #x = vec2dense(article.corpus, len_dictionary)/norm
-                #x = vec2dense(article.corpus, len_dictionary)
+                for jdx, article in enumerate(cur_articles):
+                    words = [i for (i,j) in article.corpus]
 
-                #hash_dict[hash(str(x))] = len(cur_articles)-jdx
-                #if article.related > 1:
-                #    hash_dict[hash(str(x))] = article.related
-                #else:
-                #    hash_dict[hash(str(x))] = 1
-                #run_dict[hash(str(x))] = run+gap
+                    for word in words:
+                        prob[word][-gap] += 1
+                    #norm = sum(num for (tmp, num) in article.corpus)
+                    #x = vec2dense(article.corpus, len_dictionary)/norm
+                    #x = vec2dense(article.corpus, len_dictionary)
 
-                #vec_article_list.append(x)
-                #run_length_list.append(-gap)
+                    #hash_dict[hash(str(x))] = len(cur_articles)-jdx
+                    #if article.related > 1:
+                    #    hash_dict[hash(str(x))] = article.related
+                    #else:
+                    #    hash_dict[hash(str(x))] = 1
+                    #run_dict[hash(str(x))] = run+gap
 
-    mat = scipy.io.savemat(outname,  mdict={'prob':prob})
-    print " > %s complete" % outname
+                    #vec_article_list.append(x)
+                    #run_length_list.append(-gap)
+
+        mat = scipy.io.savemat(outname,  mdict={'prob':prob})
+        print " > %s complete" % outname
+
+    if not os.path.isfile(countname):
+        len_dictionary = len(dictionary)
+        word_count = vec2dense(articles[0].corpus, len_dictionary)
+        for article in articles[1:]:
+            word_count += vec2dense(article.corpus, len_dictionary)
+        mat = scipy.io.savemat(countname,  mdict={'word_count':word_count})
+        print " > %s complete" % countname
+
+    if not os.path.isfile(dicname):
+        #articles = []
+        #np.zeros((len(articles),len(dictionary)+1),dtype=np.int8)
+        #count = 0
+        new_articles = {}
+        for k, v in article_dict.items():
+            ddd = []
+            for idx, i in enumerate(v):
+                dd = []
+                for corp in i.corpus:
+                    #dd[corp[0]] = corp[1]
+                    dd.append(corp[0])
+                    #articles[count][corp[0]] = corp[1]
+                ddd.append(dd)
+                #count += 1
+            new_articles[k.strftime("d%Y%m%d")]=np.array(ddd)
+
+        scipy.io.savemat(dicname,  new_articles)
+        print " > %s complete" % dicname
