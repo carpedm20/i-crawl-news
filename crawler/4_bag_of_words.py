@@ -20,7 +20,8 @@ articles.sort()
 
 #companies = ['ibm','microsoft']
 #companies = ['yuan','euro','yen','korea']
-companies = ['inception','the','frozen']
+#companies = ['inception','the','frozen']
+companies = ['interstellar']
 
 vectorizer = CountVectorizer(analyzer = "word",
                              tokenizer = None,

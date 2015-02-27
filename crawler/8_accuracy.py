@@ -90,7 +90,7 @@ else:
     ll = []
     plus = "+"
     losses = sorted(losses, key=itemgetter(0))
-    for com in ['AAPL','FB','GOOGL','IBM','MSFT','EUR','KRW','JPY','knight','inception','frozne','avengers']:
+    for com in ['AAPL','FB','GOOGL','IBM','MSFT','EUR','KRW','JPY','knight','inception','frozen','avengers','interstellar']:
         for ex in ['log','tfidf']:
             target = "\n%s,%s" % (com,ex)
             if target not in ll:
@@ -102,7 +102,7 @@ else:
             else:
                 print "& TFIDF+  ",
             if com == 'FB':
-                print "&   ",
+                print "&  &   ",
                 for year in ['2012-2012','2013-2013','2014-2014','2012-2014']:
                     for i, j, k in losses:
                         if com in i and ex in i and year in i:
@@ -110,6 +110,12 @@ else:
                             print "& %.4f  " % j,
                             avg += float(j)
                 print "& %.4f   \\\\" % (avg/5),
+            elif com in ['knight','inception','frozen','avengers','interstellar']:
+                for i, j, k in losses:
+                    if com in i and ex in i:
+                        #print "%s  %.4f  %s" % (i, j, k)
+                        print "& %.4f  " % j,
+                        avg += float(j)
             else:
                 for year in ['2010-2010','2011-2011','2012-2012','2013-2013','2014-2014','2010-2014']:
                     for i, j, k in losses:
@@ -125,7 +131,7 @@ else:
             ll.append(target)
         print "& TF+  ",
         if com == 'FB':
-            print "&   ",
+            print "&  &  ",
             for year in ['2012-2012','2013-2013','2014-2014','2012-2014']:
                 for i, j, k in losses:
                     if com in i and 'log' not in i and 'tfidf' not in i and year in i:
@@ -133,6 +139,12 @@ else:
                         print "& %.4f  " % j,
                         avg += float(j)
             print "& %.4f   \\\\" % (avg/6),
+        elif com in ['knight','inception','frozen','avengers','interstellar']:
+            for i, j, k in losses:
+                if com in i and ex in i:
+                    #print "%s  %.4f  %s" % (i, j, k)
+                    print "& %.4f  " % j,
+                    avg += float(j)
         else:
             for year in ['2010-2010','2011-2011','2012-2012','2013-2013','2014-2014','2010-2014']:
                 for i, j, k in losses:

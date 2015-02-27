@@ -21,15 +21,16 @@ import humanize
 
 #companies = ['google','apple','facebook', 'microsoft', 'ibm', 'oracle']
 #ARTICLE_DIR = "article"
-#companies = ['euro','yen','yuan', 'korea']
-#ARTICLE_DIR = "money"
-companies = ['the avengers movie','frozen movie','inception movie','the dark knight']
-ARTICLE_DIR = "movie"
+companies = ['euro','yen','yuan', 'korea']
+ARTICLE_DIR = "money"
+#companies = ['the dark knight','inception movie','the avengers movie','frozen movie','interstellar movie']
+#ARTICLE_DIR = "movie"
 
 articles = glob("./%s/*-article.json" % ARTICLE_DIR)
 articles.sort()
 
-years = range(2008,2015)
+#years = range(2008,2015)
+years = range(2008,2016)
 
 month_dict = {"Jan":1,"Feb":2,"Mar":3,"Apr":4, "May":5, "Jun":6, "Jul":7,"Aug":8,"Sep":9,"Oct":10,"Nov":11,"Dec":12}
 

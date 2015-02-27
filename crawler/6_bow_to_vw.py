@@ -29,6 +29,7 @@ company_dict = {'GOOGL':'google',
                 'frozen' : 'frozen movie',
                 'inception' : 'inception movie',
                 'knight' : 'the dark knight',
+                'interstellar': 'interstellar movie',
                 'JPY': 'yen',
                 'KRW': 'korea won',
                 'EUR': 'euro' }
@@ -38,7 +39,7 @@ company_dict = {'GOOGL':'google',
 #is_weighted = False
 #is_cutoff = False
 is_weighted = False
-is_date_weighted = False
+is_date_weighted = True
 is_cutoff = False
 max_interval = 7
 scale = 1000
@@ -71,7 +72,7 @@ class Article(object):
 
 #for fname in glob("./mat/*-%s-*.mat" % scale):
 #for fname in glob("./mat/*-%s-*.mat" % scale):
-for fname in glob("./mat/JPY*-*.mat") + glob("./mat/AAPL*-*.mat"):
+for fname in glob("./mat/interstellar*-*.mat"):
     mat = scipy.io.loadmat(fname)
     outname = fname[:-4].replace("mat","wnew")
     #outname = fname[:-4]

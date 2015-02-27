@@ -10,9 +10,13 @@ name="interstellar movie" #2014,2015
 #name="the departed movie" #2006,2007
 #name="the intouchables movie" #2012,2013
 
-declare -a foo1=("the dark knight" "inception movie" "the avengers movie" "frozen movie" "skyfall movie")
-declare -a foo2=("2008" "2010" "2012" "2013" "2012")
-declare -a foo3=("2009" "2011" "2012" "2014" "2013")
+#declare -a foo1=("the dark knight" "inception movie" "the avengers movie" "frozen movie" "skyfall movie")
+#declare -a foo2=("2008" "2010" "2012" "2013" "2012")
+#declare -a foo3=("2009" "2011" "2012" "2014" "2013")
+
+declare -a foo1=("interstellar movie")
+declare -a foo2=("2014")
+declare -a foo3=("2015")
 
 for i in "${!foo1[@]}";
 do
