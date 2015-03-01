@@ -3,6 +3,7 @@
 *.vw*
 */new/*
 */wnew/*
+*/garbage/*
 *.json
 log*
 *.zip
