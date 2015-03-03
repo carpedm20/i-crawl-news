@@ -1,9 +1,9 @@
 I crawl news
 ============
 
-I crawl news is a simple Scrapy applicaion to crawl the news article from google.
+Code for *Improved Bayesian Online Change Point Detectionby Reading Texts (Taehoon Kim, 2015)*
 
-Codes are used for *Run Length Prediction of Change Point by TextFeatures (Taehoon Kim, 2015)*
+[matlab code](https://github.com/carpedm20/Run-Length-Prediction-of-Change-Point-by-Text-Features)
 
 Author
 ------
