@@ -7,7 +7,7 @@ do
   do
     for j in $(seq 1 12);
     do
-      file="./deep_delay/$name-$i-$j-deep.json" 
+      file="./new_article_delay/$name-$i-$j-deep.json" 
       if [ ! -f "$file" ]; then
         #echo "File $file not found!"
         echo "$name $i $j"

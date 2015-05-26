@@ -16,7 +16,8 @@ MAX = 100
 
 def get_urls(company, year, month):
     urls = []
-    re = "./backup/%s-%s-%s.json" % (company, year, month)
+    #re = "./backup/%s-%s-%s.json" % (company, year, month)
+    re = "./new_articles/%s-%s-%s.json" % (company, year, month)
     for file_name in glob(re):
         j = json.loads(open(file_name).read())
         #j=sorted(j, key=lambda k: len(k['sub']))

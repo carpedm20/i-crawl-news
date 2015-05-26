@@ -1,3 +1,5 @@
-google
-apple
-facebook
+NASDAQ:GOOGL
+NASDAQ:FB
+NASDAQ:AAPL
+NASDAQ:IBM
+NASDAQ:MSFT

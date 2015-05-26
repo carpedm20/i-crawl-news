@@ -8,15 +8,16 @@ g = goose.Goose()
 
 #ARTICLE_DIR = "article"
 #ARTICLE_DIR = "money"
-ARTICLE_DIR = "movie"
+#ARTICLE_DIR = "movie"
+ARTICLE_DIR = "new_articles"
 
 #articles = glob("./%s/*-article.json" % ARTICLE_DIR)
 articles = glob("./%s/*-*.json" % ARTICLE_DIR)
 articles.sort()
 
-#path = "./%s/*-article.json" % (ARTICLE_DIR)
+path = "./%s/*-article.json" % (ARTICLE_DIR)
 #path = "./%s/*-*.json" % (ARTICLE_DIR)
-path = "./%s/interstellar*-12.json" % (ARTICLE_DIR)
+#path = "./%s/interstellar*-12.json" % (ARTICLE_DIR)
 articles = glob(path)
 
 for article in articles:

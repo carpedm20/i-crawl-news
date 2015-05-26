@@ -65,6 +65,7 @@ class NewsSpider(Spider):
             return None
 
     def parse(self, response):
+        print response.request.url
         for li in response.xpath("//li[@class='g']"):
             divs = li.xpath("./div/div[@class!='_Vmc']")
 

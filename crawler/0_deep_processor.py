@@ -12,8 +12,8 @@ from newspaper.cleaners import DocumentCleaner
 
 import goose
 
-BACKUP_DIR = "backup"
-DEEP_DIR = "deep_delay"
+BACKUP_DIR = "new_articles"
+DEEP_DIR = "new_deep_delay"
 
 g = goose.Goose()
 
@@ -67,9 +67,11 @@ pool = Pool(cpu_count())
 companies = ['google','apple','facebook','microsoft','ibm','oracle','intel']
 years = range(2010,2015)
 
-for company in companies:
+#for company in companies:
+if True:
     for year in years:
-        path = "./%s/%s-%s*-deep.json" % (DEEP_DIR, company, year)
+        #path = "./%s/%s-%s*-deep.json" % (DEEP_DIR, company, year)
+        path = "./%s/*-%s*-deep.json" % (DEEP_DIR, year)
         deeps = glob(path)
         
         for deep in deeps:

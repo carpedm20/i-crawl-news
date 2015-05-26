@@ -93,7 +93,11 @@ for fname in glob("./mat/*-*.mat"):
 
     R = mat.get('R')
     maxes = mat.get('maxes')
-    data = mat.get('X')[0]
+    try:
+        data = mat.get('X')[0]
+    except:
+        print "ERROR : %s" % fname
+        continue
 
     if type(mat.get('date')) == list:
         mat_dates = mat.get('date')[0]

@@ -8,7 +8,8 @@ do
     for j in $(seq 1 12);
     do
       echo "$name $i $j"
-      scrapy crawl deepnews -a month=$j -a year=$i -a query=$name -o "$name-$i-$j-deep".json
+      #scrapy crawl deepnews -a month=$j -a year=$i -a query=$name -o "./new_articles/$name-$i-$j-deep".json
+      scrapy crawl deepnews -a month=$j -a year=$i -a query=$name -o "./new_deep/$name-$i-$j-deep".json
     done
   done
 done < $1
