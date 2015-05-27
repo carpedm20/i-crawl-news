@@ -11,17 +11,18 @@ from sklearn.feature_extraction.text import CountVectorizer
 import goose
 g = goose.Goose()
 
-ARTICLE_DIR = "article"
 ARTICLE_DIR = "money"
 ARTICLE_DIR = "movie"
+ARTICLE_DIR = "new_articles"
 
 articles = glob("./%s/*-*.json" % ARTICLE_DIR)
 articles.sort()
 
+companies = ["*"]
 #companies = ['ibm','microsoft']
 #companies = ['yuan','euro','yen','korea']
 #companies = ['inception','the','frozen']
-companies = ['interstellar']
+#companies = ['interstellar']
 
 vectorizer = CountVectorizer(analyzer = "word",
                              tokenizer = None,
@@ -46,7 +47,10 @@ for company in companies:
         else:
             print "[*] %s" % bow
 
-        article_j = json.loads(open(article).read())
+        try:
+            article_j = json.loads(open(article).read())
+        except:
+            continue
 
         for article_i in article_j:
             try:

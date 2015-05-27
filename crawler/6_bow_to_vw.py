@@ -19,6 +19,8 @@ from sklearn.cross_validation import train_test_split
 #start_y = 2014
 #start_date = datetime.datetime(start_y, 1, 1)
 #end_date = datetime.datetime(start_y, 12, 31)
+bow_dir = "bow"
+bow_dir = "bow-new_articles"
 
 company_dict = {'GOOGL':'google',
                 'AAPL' :'apple',
@@ -71,8 +73,11 @@ class Article(object):
 #lsi = models.LsiModel(corpus_tfidf, id2word=dictionary, num_topics=100)
 
 #for fname in glob("./mat/*-%s-*.mat" % scale):
-#for fname in glob("./mat/*-%s-*.mat" % scale):
-for fname in glob("./mat/interstellar*-*.mat"):
+for fname in glob("./mat/*-*-*.mat"):
+#for fname in glob("./mat/interstellar*-*.mat"):
+    if [i for i in ["KRW", "EUR", "JPY"] if i in fname]:
+        continue
+    print fname
     mat = scipy.io.loadmat(fname)
     outname = fname[:-4].replace("mat","wnew")
     #outname = fname[:-4]
@@ -142,7 +147,7 @@ for fname in glob("./mat/interstellar*-*.mat"):
                 dates.append(datetime.datetime.strptime(dd, "%d-%b-%Y").date())
 
     bows = []
-    for ffname in glob("./bow/%s-*-bow.json" % company):
+    for ffname in glob("./%s/%s-*-bow.json" % (bow_dir, company)):
         f_year = int(ffname.split("-")[1])
 
         if start_y <= f_year <= end_y:

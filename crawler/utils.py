@@ -1,0 +1,13 @@
+company_dict = {'GOOGL':'google',
+                'AAPL' :'apple',
+                'FB'   :'facebook',
+                'IBM'   :'ibm',
+                'MSFT'   :'microsoft',
+                'avengers' : 'the avengers movie',
+                'frozen' : 'frozen movie',
+                'inception' : 'inception movie',
+                'knight' : 'the dark knight',
+                'interstellar': 'interstellar movie',
+                'JPY': 'yen',
+                'KRW': 'korea won',
+                'EUR': 'euro' }

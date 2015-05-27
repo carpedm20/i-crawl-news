@@ -8,9 +8,12 @@ import json
 
 companies = ['facebook','ibm','microsoft','google','apple']
 
+article_dir = 'bow'
+article_dir = 'new_articles'
+
 for company in companies:
     count = 0
-    for fname in glob("./bow/%s*.json" % company):
+    for fname in glob("./%s/%s*.json" % (article_dir, company)):
         j=json.loads(open(fname).read())
         for i in j:
             if i['words'] != '':
@@ -21,7 +24,7 @@ from collections import Counter
 
 
 news = []
-for fname in glob("./bow/*.json"):
+for fname in glob("./%s/*.json" % (article_dir)):
     j=json.loads(open(fname).read())
     news.extend([i['name'] for i in j if i['text'] != ''])
 

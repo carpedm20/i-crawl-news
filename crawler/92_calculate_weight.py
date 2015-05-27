@@ -53,6 +53,7 @@ for fname in glob("./mat/*-*.mat"):
 
     d = {}
     infoname = fname.replace('mat','wnew',1).replace('.mat','-tfidf-z-train.evw.info')
+    print infoname
     with open(infoname) as infile:
         for e, line in enumerate( infile.readlines() ):
             if e > 0:
