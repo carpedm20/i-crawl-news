@@ -20,7 +20,8 @@ from sklearn.cross_validation import train_test_split
 #start_date = datetime.datetime(start_y, 1, 1)
 #end_date = datetime.datetime(start_y, 12, 31)
 bow_dir = "bow"
-bow_dir = "bow-new_articles"
+#bow_dir = "bow-new_articles"
+bow_dir = "bow-new_words"
 
 company_dict = {'GOOGL':'google',
                 'AAPL' :'apple',
@@ -35,6 +36,8 @@ company_dict = {'GOOGL':'google',
                 'JPY': 'yen',
                 'KRW': 'korea won',
                 'EUR': 'euro' }
+
+reverse_company_dict = dict((j, i) for i, j in company_dict.items())
 
 #is_weighted = True
 #is_cutoff = True
@@ -73,13 +76,16 @@ class Article(object):
 #lsi = models.LsiModel(corpus_tfidf, id2word=dictionary, num_topics=100)
 
 #for fname in glob("./mat/*-%s-*.mat" % scale):
-for fname in glob("./mat/*-*-*.mat"):
+#./mat/AAPL-250-4000-2013-2013.mat
+for fname in glob("./mat/*-250-4000-*-*.mat"):
 #for fname in glob("./mat/interstellar*-*.mat"):
+    if 'weight' in fname:
+        break
     if [i for i in ["KRW", "EUR", "JPY"] if i in fname]:
         continue
     print fname
     mat = scipy.io.loadmat(fname)
-    outname = fname[:-4].replace("mat","wnew")
+    outname = fname[:-4].replace("mat","new_wnew")
     #outname = fname[:-4]
 
     if is_weighted:
@@ -147,18 +153,22 @@ for fname in glob("./mat/*-*-*.mat"):
                 dates.append(datetime.datetime.strptime(dd, "%d-%b-%Y").date())
 
     bows = []
-    for ffname in glob("./%s/%s-*-bow.json" % (bow_dir, company)):
-        f_year = int(ffname.split("-")[1])
+    print "=========== %s =============" % company
+    #for ffname in glob("./%s/*%s-*-deep-bow.json" % (bow_dir, reverse_company_dict[company])):
+    for ffname in glob("./%s/*%s-*-article-bow.json" % (bow_dir, reverse_company_dict[company])):
+        f_year = int(ffname.split("-")[-4])
 
         if start_y <= f_year <= end_y:
             j = json.loads(open(ffname).read())
             bows.extend(j)
+            print len(bows)
 
     count = 0
     articles = []
     article_dict = {}
 
     for bow in bows:
+        #print bow
         if is_cutoff:
             if bow['name'] not in news_list:
                 continue

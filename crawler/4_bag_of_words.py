@@ -13,9 +13,9 @@ g = goose.Goose()
 
 ARTICLE_DIR = "money"
 ARTICLE_DIR = "movie"
-ARTICLE_DIR = "new_articles"
+ARTICLE_DIR = "new_words"
 
-articles = glob("./%s/*-*.json" % ARTICLE_DIR)
+articles = glob("./%s/*-*-article.json" % ARTICLE_DIR)
 articles.sort()
 
 companies = ["*"]
@@ -37,8 +37,8 @@ for company in companies:
     path = "./%s/%s*-*.json" % (ARTICLE_DIR, company)
 
     for article in glob(path):
+        print " ===> %s" % article
         bow = article.replace('/%s/' % ARTICLE_DIR,'/bow-%s/' % ARTICLE_DIR).replace('.json','-bow.json')
-        print bow
 
         #if isfile(bow):
         if False:
@@ -55,6 +55,7 @@ for company in companies:
         for article_i in article_j:
             try:
                 text = article_i['text']
+                #print text
             except:
                 continue
 

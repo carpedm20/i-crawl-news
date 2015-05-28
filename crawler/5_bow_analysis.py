@@ -3,7 +3,8 @@ from glob import glob
 from newspaper import Article
 import json
 
-BOW_DIR = "bow"
+#BOW_DIR = "bow"
+BOW_DIR = "bow-new_words"
 
 bows = glob("./%s/*-bow.json" % BOW_DIR)
 bows.sort()
@@ -24,8 +25,11 @@ for year in years:
         bow_j = json.loads(open(bow).read())
 
         for bow_i in bow_j:
-            document_count[year] += 1
-            word_count[year] += len(bow_i['words'].split())
+            try:
+                word_count[year] += len(bow_i['words'].split())
+                document_count[year] += 1
+            except:
+                pass
 
     print "%s : %s %s => %10.4f" % (year,
            "{:,}".format(document_count[year]),

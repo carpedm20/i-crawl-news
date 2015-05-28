@@ -13,7 +13,7 @@ from newspaper.cleaners import DocumentCleaner
 import goose
 
 BACKUP_DIR = "new_articles"
-DEEP_DIR = "new_deep_delay"
+DEEP_DIR = "new_article_delay"
 
 g = goose.Goose()
 
