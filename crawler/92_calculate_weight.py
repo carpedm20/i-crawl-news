@@ -30,7 +30,8 @@ company_dict = {'GOOGL':'google',
                 'KRW': 'korea won',
                 'EUR': 'euro' }
 
-for fname in glob("./mat/*-*.mat"):
+#for fname in glob("./mat/*-*.mat"):
+for fname in glob("./new_mat/*-*.mat"):
     if '-250-4000-' not in fname:
         continue
 
@@ -47,22 +48,30 @@ for fname in glob("./mat/*-*.mat"):
         continue
     print "%s -> %s" % (fname, outname)
 
-    dic = pickle.load(open(dicname))
+    try:
+        dic = pickle.load(open(dicname))
+    except:
+        continue
 
     #Formats data for graph
 
     d = {}
     #infoname = fname.replace('mat','wnew',1).replace('.mat','-tfidf-z-train.evw.info')
-    infoname = fname.replace('mat','new_wnew',1).replace('.mat','-tfidf-z-train.vw.info')
+    infoname = fname.replace('new_mat','new_wnew',1).replace('.mat','-tfidf-z-train.vw.info')
     print infoname
-    with open(infoname) as infile:
-        for e, line in enumerate( infile.readlines() ):
-            if e > 0:
-                token = line.strip().split("\t")[0][1:].strip()
-                value = line.strip().split("\t")[1].split()[-2]
-                d[token] = float(value)/float(100)
+
+    try:
+        with open(infoname) as infile:
+            for e, line in enumerate( infile.readlines() ):
+                if e > 0:
+                    token = line.strip().split("\t")[0][1:].strip()
+                    value = line.strip().split("\t")[1].split()[-2]
+                    d[token] = float(value)/float(100)
+    except:
+        print " ============= PASS ========> ", infoname
+        continue
     #infoname = fname.replace('mat','wnew',1).replace('.mat','-tfidf-z-test.evw.info')
-    infoname = fname.replace('mat','new_wnew',1).replace('.mat','-tfidf-z-test.vw.info')
+    infoname = fname.replace('new_mat','new_wnew',1).replace('.mat','-tfidf-z-test.vw.info')
     with open(infoname) as infile:
         for e, line in enumerate( infile.readlines() ):
             if e > 0:
