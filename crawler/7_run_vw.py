@@ -27,7 +27,7 @@ def get_cmd(testf, execute=False):
     #    class_num = max([int(i.split('|')[0].split(' ')[0]) for i in a])
     #cmd = "vw -k -c --oaa %s %s --passes 20 --ngram 1 -f %s 2>&1 | tee log.txt" % (class_num+1, trainf, modelf)
     #cmd = "vw -k -c %s --passes 100 --holdout_off --ngram 1 -f %s 2>&1 | tee log.txt" % (trainf, modelf)
-    cmd = "vw -k -c %s --passes 20  --ngram 1 -f %s 2>&1 | tee log.txt" % (trainf, modelf)
+    cmd = "vw -k -c %s --passes 100  --ngram 3 -f %s 2>&1 | tee log.txt" % (trainf, modelf)
     print "==="
     print cmd
     if execute:
@@ -41,8 +41,8 @@ def get_cmd(testf, execute=False):
 
 #for testf in glob("./mat/*-y-test.vw"):
 #for testf in glob("./new/*-test.vw"):
-#for testf in glob("./wnew/*-test.evw"):
-for testf in glob("./wnew/interstellar*-*-test.*vw"):
+for testf in glob("./new_wnew/*-test.vw"):
+#for testf in glob("./wnew/interstellar*-*-test.*vw"):
     get_cmd(testf, True)
 
 #testf = "./vw/GOOGL-200-5000-2013-2014-tfidf-test.vw"

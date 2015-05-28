@@ -34,6 +34,9 @@ company_dict = {'GOOGL':'google',
                 'KRW': 'korea won',
                 'EUR': 'euro' }
 
+reverse_company_dict = dict((j, i) for i, j in company_dict.items())
+reverse_company_dict['google'] = 'GOOG'
+
 #is_weighted = True
 #is_cutoff = True
 #is_weighted = False
@@ -68,10 +71,11 @@ class Article(object):
         self.tfidf = None
         self.corpus = None
 
-for fname in glob("./mat/*-*.mat"):
+for fname in glob("./new_mat/*-*.mat"):
     if 'prob' in fname or 'weight' in fname or 'dic' in fname:
         continue
 
+    #print fname
     outname = fname.replace('-250-4000-','-prob-')
     dicname = outname.replace('-prob-','-dic-')
     countname = outname.replace('-prob-','-count-')
@@ -88,7 +92,8 @@ for fname in glob("./mat/*-*.mat"):
     split = fname[:-4].split('-')
     start_y, end_y = int(split[-2]), int(split[-1])
 
-    company_sigil = fname.split('-')[0][6:]
+    #company_sigil = fname.split('-')[0][6:]
+    company_sigil = fname.split('-')[0][10:]
     company = company_dict[company_sigil]
 
     R = mat.get('R')
@@ -136,12 +141,17 @@ for fname in glob("./mat/*-*.mat"):
                 dates.append(datetime.datetime.strptime(dd, "%d-%b-%Y").date())
 
     bows = []
-    for ffname in glob("./bow/%s-*-bow.json" % company):
-        f_year = int(ffname.split("-")[1])
+    #for ffname in glob("./bow/%s-*-bow.json" % company):
+    for ffname in glob("./bow-new_words/N*%s-*-bow.json" % reverse_company_dict[company]):
+        print "===========>", ffname
+        f_year = int(ffname.split("-")[2])
 
         if start_y <= f_year <= end_y:
             j = json.loads(open(ffname).read())
             bows.extend(j)
+
+    if len(bows) == 0:
+        continue
 
     count = 0
     articles = []

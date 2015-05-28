@@ -52,7 +52,8 @@ for fname in glob("./mat/*-*.mat"):
     #Formats data for graph
 
     d = {}
-    infoname = fname.replace('mat','wnew',1).replace('.mat','-tfidf-z-train.evw.info')
+    #infoname = fname.replace('mat','wnew',1).replace('.mat','-tfidf-z-train.evw.info')
+    infoname = fname.replace('mat','new_wnew',1).replace('.mat','-tfidf-z-train.vw.info')
     print infoname
     with open(infoname) as infile:
         for e, line in enumerate( infile.readlines() ):
@@ -60,7 +61,8 @@ for fname in glob("./mat/*-*.mat"):
                 token = line.strip().split("\t")[0][1:].strip()
                 value = line.strip().split("\t")[1].split()[-2]
                 d[token] = float(value)/float(100)
-    infoname = fname.replace('mat','wnew',1).replace('.mat','-tfidf-z-test.evw.info')
+    #infoname = fname.replace('mat','wnew',1).replace('.mat','-tfidf-z-test.evw.info')
+    infoname = fname.replace('mat','new_wnew',1).replace('.mat','-tfidf-z-test.vw.info')
     with open(infoname) as infile:
         for e, line in enumerate( infile.readlines() ):
             if e > 0:

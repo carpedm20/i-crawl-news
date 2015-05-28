@@ -38,6 +38,7 @@ company_dict = {'GOOGL':'google',
                 'EUR': 'euro' }
 
 reverse_company_dict = dict((j, i) for i, j in company_dict.items())
+reverse_company_dict['google'] = 'GOOG'
 
 #is_weighted = True
 #is_cutoff = True
@@ -155,13 +156,18 @@ for fname in glob("./mat/*-250-4000-*-*.mat"):
     bows = []
     print "=========== %s =============" % company
     #for ffname in glob("./%s/*%s-*-deep-bow.json" % (bow_dir, reverse_company_dict[company])):
-    for ffname in glob("./%s/*%s-*-article-bow.json" % (bow_dir, reverse_company_dict[company])):
+    bow_files = "./%s/*%s-*-article-bow.json" % (bow_dir, reverse_company_dict[company])
+    for ffname in glob(bow_files):
         f_year = int(ffname.split("-")[-4])
 
         if start_y <= f_year <= end_y:
             j = json.loads(open(ffname).read())
             bows.extend(j)
             print len(bows)
+    if len(bows) == 0:
+        print " =====> No file for %s" % bow_files
+        continue
+        #raise Exception("No file for %s" % bow_files)
 
     count = 0
     articles = []
