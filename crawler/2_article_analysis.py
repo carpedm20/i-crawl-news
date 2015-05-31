@@ -6,7 +6,7 @@ import humanize
 
 #ARTICLE_DIR = "backup"
 
-"""company_dict = {'GOOGL':'google',
+company_dict = {'GOOGL':'google',
                 'AAPL' :'apple',
                 'FB'   :'facebook',
                 'IBM'   :'ibm',
@@ -17,10 +17,14 @@ import humanize
                 'knight' : 'the dark knight',
                 'JPY': 'yen',
                 'KRW': 'korea won',
-                'EUR': 'euro' }"""
+                'EUR': 'euro' }
 
-companies = ['google','apple','facebook', 'microsoft', 'ibm', 'oracle']
-ARTICLE_DIR = "article"
+reverse_company_dict = dict((j, i) for i, j in company_dict.items())
+reverse_company_dict['google'] = 'GOOG'
+
+companies = ['google','apple','facebook', 'microsoft', 'ibm']
+#ARTICLE_DIR = "article"
+ARTICLE_DIR = "bow-new_words"
 #companies = ['euro','yen','yuan', 'korea']
 #ARTICLE_DIR = "money"
 #companies = ['the dark knight','inception movie','the avengers movie','frozen movie','interstellar movie']
@@ -45,7 +49,7 @@ for company in companies:
     words = 0
     documents = 0
     for year in years:
-        path = "./%s/%s*-%s*.json" % (ARTICLE_DIR, company, year)
+        path = "./%s/*%s*-%s*.json" % (ARTICLE_DIR, reverse_company_dict[company], year)
         #print path
 
         total = 0

@@ -26,6 +26,7 @@ class NewsSpider(Spider):
     def __init__ (self, month=4, year=2013, query="euro"):
         self.base_url = get_url(month, 1, year, month, 31, year, query)
         self.start_urls = [self.base_url]
+        print self.start_urls
 
         log.msg("[START] %s" % self.base_url, log.INFO)
 

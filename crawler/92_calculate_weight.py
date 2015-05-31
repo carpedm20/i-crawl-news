@@ -31,11 +31,10 @@ company_dict = {'GOOGL':'google',
                 'EUR': 'euro' }
 
 #for fname in glob("./mat/*-*.mat"):
-for fname in glob("./new_mat/*-*.mat"):
+#for fname in glob("./new_mat/*-*.mat"):
+for fname in glob("./mat/interstellar*.mat"):
+    print fname
     if '-250-4000-' not in fname:
-        continue
-
-    if 'interstellar' in fname:
         continue
 
     #outname = fname[:-4].replace("mat","wnew")
@@ -56,22 +55,20 @@ for fname in glob("./new_mat/*-*.mat"):
     #Formats data for graph
 
     d = {}
-    #infoname = fname.replace('mat','wnew',1).replace('.mat','-tfidf-z-train.evw.info')
-    infoname = fname.replace('new_mat','new_wnew',1).replace('.mat','-tfidf-z-train.vw.info')
+    #interstellar-250-4000-2010-2014-z-train.vw.info
+    infoname = fname.replace('mat','wnew',1).replace('.mat','-z-train.vw.info')
+    #infoname = fname.replace('new_mat','new_wnew',1).replace('.mat','-tfidf-z-train.vw.info')
     print infoname
 
-    try:
-        with open(infoname) as infile:
-            for e, line in enumerate( infile.readlines() ):
-                if e > 0:
-                    token = line.strip().split("\t")[0][1:].strip()
-                    value = line.strip().split("\t")[1].split()[-2]
-                    d[token] = float(value)/float(100)
-    except:
-        print " ============= PASS ========> ", infoname
-        continue
+    with open(infoname) as infile:
+        for e, line in enumerate( infile.readlines() ):
+            if e > 0:
+                token = line.strip().split("\t")[0][1:].strip()
+                value = line.strip().split("\t")[1].split()[-2]
+                d[token] = float(value)/float(100)
     #infoname = fname.replace('mat','wnew',1).replace('.mat','-tfidf-z-test.evw.info')
-    infoname = fname.replace('new_mat','new_wnew',1).replace('.mat','-tfidf-z-test.vw.info')
+    #infoname = fname.replace('new_mat','new_wnew',1).replace('.mat','-tfidf-z-test.vw.info')
+    infoname = fname.replace('mat','wnew',1).replace('.mat','-z-test.vw.info')
     with open(infoname) as infile:
         for e, line in enumerate( infile.readlines() ):
             if e > 0:

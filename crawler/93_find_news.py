@@ -19,20 +19,26 @@ is_cutoff = False
 #month = 12
 
 company = "google"
-year = 2010
+year = 2013
 dates = range(19,23) + range(1,10)
 dates_idx = [4, 5, 8, 9, 11, 12] # bad
 dates_idx = [43, 48, 49] # good
 #dates_idx = [57, 58, 59] # good
+#dates_idx = range(17,32)  # good
+dates_idx = range(92,97)  # good
 
-company = "apple"
-year = 2014
-dates_idx = [28, 109] # good
+#company = "apple"
+#year = 2014
+#dates_idx = [28, 109] # good
+#dates_idx = range(8, 14) # good
+#dates_idx = range(25,26) # good
+#dates_idx = range(70, 75) # good
 
 start_date = datetime(year, 1, 1)
 day1 =  timedelta(days=1)
 dates = [start_date + (date-1) * day1 for date in dates_idx]
 dates = [date.strftime("%b %d, %Y").replace(' 0',' ') for date in dates]
+dates = ["May %d, 2013" % date for date in range(14,22)]
 
 #print dates
 
@@ -57,6 +63,7 @@ with open(infoname) as infile:
             token = line.strip().split("\t")[0][1:].strip()
             value = line.strip().split("\t")[1].split()[-2]
             word_d[token] = float(value)/float(100)
+            #word_d[token] = abs(float(value))
 
 date_score_sentences = {}
 for date, articles in articles.items():
@@ -86,10 +93,14 @@ for date, articles in articles.items():
                     score += word_d[w]
                 except:
                     continue
-            score_sentences[sentence] = [score, article['href']]
+            try:
+                #score_sentences[sentence] = [score/len(meaningful_words), article['href']]
+                score_sentences[sentence] = [score, article['href']]
+            except:
+                pass
 
     d = OrderedDict(sorted(score_sentences.items(), key=lambda t: t[1]))
-    date_score_sentences[date] = d
+    date_score_sentences[''] = d
 
 def sentence_info(score, sentence, word_d, latex_mode=True):
     letters_only = re.sub("[^a-zA-Z]", " ", sentence)
@@ -106,7 +117,9 @@ def sentence_info(score, sentence, word_d, latex_mode=True):
     d = OrderedDict(sorted(d.items(), key=lambda t: t[1]))
     if latex_mode:
         for word in sentence.split():
-            if re.sub("[^a-zA-Z]", "", word).lower() in d.keys()[-5:]:
+            #if re.sub("[^a-zA-Z]", "", word).lower() in d.keys()[-5:]:
+            if re.sub("[^a-zA-Z]", "", word).lower() in d.keys()[len(d)/2:len(d)/2+6]:
+            #if re.sub("[^a-zA-Z]", "", word).lower() in d.keys()[:5]:
                 sentence = sentence.replace(word, "\\textbf{%s}" % word)
     print score, sentence
     for a, b in d.items():
@@ -119,8 +132,10 @@ for (date, d), d_idx in zip(date_score_sentences.items(), dates_idx):
     print date, "(", d_idx, ")"
     print "================================================"
     print "================================================"
+    print "length :", len(d.items())
 
-    for a, b in d.items()[-6:]:
+    for a, b in d.items()[-16:]:
+    #for a, b in d.items()[:5]:
         print "----------------------------------------------------------------"
         sentence_info(b, a, word_d)
     """print "##############################################################"
